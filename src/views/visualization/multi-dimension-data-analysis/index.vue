@@ -1,43 +1,4 @@
-<!-- <template>
 
-  <DataOverview />
-</template> -->
-
-<!-- <script lang="ts" setup>
-  import DataOverview from './components/data-overview.vue';
-  import DataChainGrowth from './components/data-chain-growth.vue';
-  import UserActions from './components/user-actions.vue';
-  import ContentTypeDistribution from './components/content-type-distribution.vue';
-  import ContentPublishingSource from './components/content-publishing-source.vue';
-</script> -->
-
-<!-- <script lang="ts">
-  export default {
-    name: 'MultiDimensionDataAnalysis',
-  };
-
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < navigator.mimeTypes.length; i++) {
-    console.log(navigator.mimeTypes[i].type);
-  }
-</script> -->
-
-<!-- <style scoped lang="less">
-  .container {
-    padding: 24px 48px 20px;
-    // overflow: auto;
-  }
-
-  :deep(.section-titile) {
-    margin-top: 0;
-    margin-bottom: 16px;
-    font-size: 16px;
-  }
-
-  :deep(.chart-wrap) {
-    height: 264px;
-  }
-</style> -->
 <template>
   <div>
     <a-spin :loading="loading" style="width: 100%">
