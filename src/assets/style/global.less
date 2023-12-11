@@ -1,0 +1,395 @@
+* {
+  box-sizing: border-box;
+}
+
+// 宽高
+.w-100 {
+  width: 100%;
+}
+.h-100 {
+  height: 100%;
+}
+
+//flex
+.d-flex {
+  display: flex;
+}
+.flex-column {
+  flex-direction: column;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  background-color: var(--color-bg-1);
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+.echarts-tooltip-diy {
+  background: linear-gradient(
+    304.17deg,
+    rgba(253, 254, 255, 0.6) -6.04%,
+    rgba(244, 247, 252, 0.6) 85.2%
+  ) !important;
+  border: none !important;
+  backdrop-filter: blur(10px) !important;
+  /* Note: backdrop-filter has minimal browser support */
+
+  border-radius: 6px !important;
+  .content-panel {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 9px;
+    background: rgba(255, 255, 255, 0.8);
+    width: 164px;
+    height: 32px;
+    line-height: 32px;
+    box-shadow: 6px 0px 20px rgba(34, 87, 188, 0.1);
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .tooltip-title {
+    margin: 0 0 10px 0;
+  }
+  p {
+    margin: 0;
+  }
+  .tooltip-title,
+  .tooltip-value {
+    font-size: 13px;
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    text-align: right;
+    color: #1d2129;
+    font-weight: bold;
+  }
+  .tooltip-item-icon {
+    display: inline-block;
+    margin-right: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+}
+
+.general-card {
+  border-radius: 4px;
+  border: none;
+  & > .arco-card-header {
+    height: auto;
+    padding: 20px;
+    border: none;
+  }
+  & > .arco-card-body {
+    padding: 0 20px 20px 20px;
+  }
+}
+
+.split-line {
+  border-color: rgb(var(--gray-2));
+}
+
+.arco-table-cell {
+  .circle {
+    display: inline-block;
+    margin-right: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: rgb(var(--blue-6));
+    &.pass {
+      background-color: rgb(var(--green-6));
+    }
+  }
+}
+.general-card-upai {
+  // border-radius: 20px;
+  border: none !important; 
+  margin-bottom: 16px !important;
+  border-radius: 12px !important;
+
+  & > .arco-card-header {
+   
+    border: none !important;
+  }
+  & >.arco-card-body {
+    padding: 20px 17px 0 !important;
+  }
+}
+
+.arco-statistic-value{
+  font-size: 12px !important;
+}
+
+.color-white{
+  --un-text-opacity: 1;
+  color: rgba(255,255,255,var(--un-text-opacity));
+}
+
+.arco-btn-size-small{
+    font-size: 12px !important;
+}
+.labelText{
+  font-size: 12px !important;
+}
+.arco-input{
+  font-size: 12px !important;
+}
+.arco-select-view-size-medium{
+  font-size: 12px !important;
+}
+.arco-select-view-input{
+  font-size: 12px !important;
+}
+.arco-select-option{
+  font-size: 12px !important;
+}
+.arco-picker-input input{
+  font-size: 12px !important;
+}
+.arco-table-td{
+  font-size: 12px !important;
+}
+.arco-table-th{
+  font-size: 12px !important;
+  height: 40px !important;
+}
+.arco-link{
+  font-size: 12px !important;
+}
+
+ .arco-statistic-value-integer {
+  font-size: 12px !important;
+}
+ .arco-statistic-value-decimal {
+  font-size: 12px !important;
+}
+ .arco-statistic-value {
+  font-size: 12px !important;
+}
+
+ .arco-descriptions-item {
+  .arco-descriptions-item-label-inline {
+    font-size: 12px;
+  }
+  .arco-descriptions-item-value-inline {
+    font-size: 12px;
+  }
+}
+
+ .t-table__header tr {
+  background: #f2f5ff;
+  height: 32px;
+  border-radius: 4px;
+  font-weight: 700;
+  color: #535353;
+  border-bottom: none !important;
+  font-size: 12px;
+}
+
+ .t-table__body td {
+  font-size: 12px;
+}
+
+.arco-form-item-label {
+  font-size: 12px !important;
+}
+
+.arco-radio-label{
+  font-size: 12px !important;
+
+}
+.arco-input-number{
+  height: 32px !important;
+}
+
+.arco-select-view-single{
+  height: 32px !important;
+}
+
+.arco-btn-size-medium {
+  height: 28px;
+  padding: 0 15px;
+  font-size: 12px;
+  border-radius: var(--border-radius-small);
+}
+ .arco-picker{
+  height: 32px !important;
+
+ }
+.arco-input-wrapper{
+  height: 32px !important;
+}
+.arco-textarea{
+  font-size: 12px !important;
+
+}
+.arco-select-view-value{
+  font-size: 12px !important;
+}
+
+.arco-typography {
+  font-size: 12px !important;
+}
+.pageTitle {
+  font-size: 16px !important;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #2d2d2d;
+  line-height: 20px !important;
+  margin-bottom: 20px !important;
+}
+.t-input__inner{
+  font-size: 12px;
+}
+.t-select-option{
+  font-size: 12px !important;
+
+}
+// .arco-btn-size-medium{
+// }
+.small-bg {
+  
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
+  // --un-bg-opacity: 1;
+}
+// .arco-modal-body{
+//   white-space: pre;
+// }
+
+
+// @media (max-width: 1500px){ 
+//       .labelText{
+//         font-size: 12px !important;
+//         line-height: 16px !important;
+//       }
+
+//       :deep  .arco-input-size-medium {
+//         padding-top: 2px !important;
+//         padding-bottom: 2px !important;
+//         font-size: 12px !important;
+//         line-height: 1.4715 !important;
+//       }
+//       .tabText{
+//         font-size: 14px !important;
+//       }
+//       .titleBox{
+//          font-size: 12px !important;
+
+//       }
+//       .n{
+//         font-size: 12px !important;
+//       }
+//       .numBox2{
+//         height: 60px  !important;
+//       }
+//       .goodStatusBox .btn{
+//         margin-right:4vw !important;
+//       }
+//       .arco-descriptions-item-label-inline{
+//         font-size: 10px !important;
+//       }
+//       .arco-statistic-value{
+//         font-size: 12px !important;
+//       }
+//       .arco-menu-item-inner{
+//         font-size: 12px !important;
+//       }
+//       .arco-menu-title{
+//         font-size: 13px !important;
+//       }
+//       .arco-menu-item{
+//         line-height: 30px !important;
+//       }
+//       .arco-table-th{
+//         font-size: 12px !important;
+//       }
+//       .arco-table-td-content{
+//         font-size: 12px !important;
+//       }
+//       .infoTitle{
+//         font-size: 16px !important;
+//       }
+//       .arco-statistic-prefix{
+//         font-size: 18px !important;
+//       }
+//       .arco-statistic-value-integer{
+//         font-size:  18px !important;
+//       }
+//       .arco-statistic-value-decimal{
+//         font-size: 18px !important;
+//       }
+//       .upai_card .rightImg{
+//         width: 60px !important;
+//         height: 60px !important;
+//       }
+//       .t-table__th-cell-inner{
+//         font-size: 12px !important;
+//       }
+//       .t-align-center{
+//         font-size: 12px !important;
+//       }
+//       .arco-typography{
+//         font-size: 12px !important;
+//       }
+//       .arco-link{
+//         font-size: 12px !important;
+//       }
+//       .arco-tag{
+//         font-size: 12px !important;
+//       }
+//       .arco-btn{
+//         font-size: 12px !important;
+//       }
+//       .arco-form-item-content input{
+//         font-size: 12px !important;
+//       }
+//       .plantVideo{
+//         // display: none;
+//         width: 40px !important;
+//         height: 60px !important;
+//         .arco-image-img{
+//           width: 40px !important;
+//           height: 60px !important;
+
+//         }
+//       }
+//       .arco-list-item{
+//         padding: 2px !important;
+//       }
+//       .arco-card-body{
+//         padding: 10px 10px !important;
+//       }
+// }
+.modalClass{
+  padding-left: 0;
+  padding-right:0 ;
+  padding-bottom:24px;
+.arco-modal-header{
+    margin-bottom: 0 !important;
+  }
+  .arco-modal-footer{
+    margin-top: 24px;
+    .arco-btn{
+              width:200px;
+              height: 34px;
+              border-radius: 4px;
+              font-size: 16px;
+    }
+
+  }
+}

@@ -1,0 +1,284 @@
+<script lang="tsx">
+  import { defineComponent, ref, h, compile, computed } from 'vue';
+  import { useI18n } from 'vue-i18n';
+  import { useRoute, useRouter, RouteRecordRaw } from 'vue-router';
+  import type { RouteMeta } from 'vue-router';
+  import { useAppStore, useUserStore } from '@/store';
+  import { listenerRouteChange } from '@/utils/route-listener';
+  import { openWindow, regexUrl } from '@/utils';
+  import useMenuTree from './use-menu-tree';
+
+  export default defineComponent({
+    emit: ['collapse'],
+    setup() {
+      const { t } = useI18n();
+      const menuList = ref(null);
+      const appStore = useAppStore();
+      const userStore = useUserStore();
+      const router = useRouter();
+      const route = useRoute();
+      const { menuTree } = useMenuTree();
+      console.log(userStore.$state, 'userStore123123');
+      const collapsed = computed({
+        get() {
+          if (appStore.device === 'desktop') return appStore.menuCollapse;
+          return false;
+        },
+        set(value: boolean) {
+          appStore.updateSettings({ menuCollapse: value });
+        },
+      });
+
+      const topMenu = computed(() => appStore.topMenu);
+      const openKeys = ref<string[]>([]);
+      const selectedKey = ref<string[]>([]);
+
+      const goto = (item: RouteRecordRaw) => {
+        // Open external link
+        if (regexUrl.test(item.path)) {
+          openWindow(item.path);
+          selectedKey.value = [item.name as string];
+          return;
+        }
+        // Eliminate external link side effects
+        const { hideInMenu, activeMenu } = item.meta as RouteMeta;
+        if (route.name === item.name && !hideInMenu && !activeMenu) {
+          selectedKey.value = [item.name as string];
+          return;
+        }
+        console.log(item, 'goto');
+        // Trigger router change
+        router.push({
+          name: item.name,
+        });
+      };
+      const findMenuOpenKeys = (target: string) => {
+        const result: string[] = [];
+        let isFind = false;
+        const backtrack = (item: RouteRecordRaw, keys: string[]) => {
+          if (item.name === target) {
+            isFind = true;
+            result.push(...keys);
+            return;
+          }
+          if (item.children?.length) {
+            item.children.forEach((el) => {
+              backtrack(el, [...keys, el.name as string]);
+            });
+          }
+        };
+        menuTree.value.forEach((el: RouteRecordRaw) => {
+          if (isFind) return; // Performance optimization
+          backtrack(el, [el.name as string]);
+        });
+        return result;
+      };
+      listenerRouteChange((newRoute) => {
+        const { requiresAuth, activeMenu, hideInMenu } = newRoute.meta;
+        if (requiresAuth && (!hideInMenu || activeMenu)) {
+          const menuOpenKeys = findMenuOpenKeys(
+            (activeMenu || newRoute.name) as string
+          );
+
+          const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
+          openKeys.value = [...keySet];
+
+          selectedKey.value = [
+            activeMenu || menuOpenKeys[menuOpenKeys.length - 1],
+          ];
+        }
+      }, true);
+      const setCollapse = (val: boolean) => {
+        if (appStore.device === 'desktop')
+          appStore.updateSettings({ menuCollapse: val });
+      };
+
+      const renderSubMenu = () => {
+        function travel(_route: RouteRecordRaw[], nodes = []) {
+          if (_route) {
+            _route.forEach((element) => {
+              // This is demo, modify nodes as needed
+              const icon = element?.meta?.icon
+                ? () => h(compile(`<${element?.meta?.icon}/>`))
+                : null;
+
+              if (element?.children && element?.children.length === 1) {
+                const node =
+                  element?.children[0].meta?.locale === '小店管理助手' ? (
+                    <a-menu-item
+                      key={element?.children[0].name}
+                      onClick={() => goto(element?.children[0])}
+                    >
+                      <a-space size="medium">
+                        <img
+                          src="https://img.adyinqing.com/upai_shop/afcxgr7l1688975468009"
+                          class="icon"
+                        />
+                        <a-space>
+                          {t(element?.children[0].meta?.locale || '')}
+                          {
+                            <span class="tag">
+                              <span class="text">New</span>
+                            </span>
+                          }
+                        </a-space>
+                      </a-space>
+                    </a-menu-item>
+                  ) : (element?.children[0].meta?.locale === '会员服务' &&
+                      userStore.$state.userInfo.memberDepId == 0) ||
+                    element?.children[0].meta?.locale != '会员服务' ? (
+                    <a-menu-item
+                      key={element?.children[0].name}
+                      v-slots={{ icon }}
+                      onClick={() => goto(element?.children[0])}
+                    >
+                      {t(element?.children[0].meta?.locale || '')}
+                    </a-menu-item>
+                  ) : (
+                    ''
+                  );
+                // const node = (
+                //   <a-menu-item
+                //     key={element?.children[0].name}
+                //     v-slots={{ icon }}
+                //     onClick={() => goto(element.children[0])}
+                //   >
+                //     {element?.children[0].meta?.locale === '会员服务' ? (
+                //       <a-space size="medium">
+                //         <img
+                //           src="https://img.adyinqing.com/upai_shop/afcxgr7l1688975468009"
+                //           class="icon"
+                //         />
+                //         <a-space>
+                //           {t(element?.children[0].meta?.locale || '')}
+                //           {userStore.$state.isBuy === 1 ? (
+                //             <span class="tag">
+                //               <span class="text">限时优惠</span>
+                //             </span>
+                //           ) : null}
+                //         </a-space>
+                //       </a-space>
+                //     ) : (
+                //       t(element?.children[0].meta?.locale || '')
+                //     )}
+                //   </a-menu-item>
+                // );
+                // const node = (
+                //   <a-menu-item
+                //     key={element?.children[0].name}
+                //     v-slots={{ icon }}
+                //     onClick={() => goto(element?.children[0])}
+                //   >
+                //     {t(element?.children[0].meta?.locale || '')}
+                //   </a-menu-item>
+                // );
+                nodes.push(node as never);
+              } else {
+                const node =
+                  element?.children && element?.children.length !== 0 ? (
+                    <a-sub-menu
+                      key={element?.name}
+                      v-slots={{
+                        icon,
+                        title: () => h(compile(t(element?.meta?.locale || ''))),
+                      }}
+                    >
+                      {travel(element?.children)}
+                    </a-sub-menu>
+                  ) : (
+                    <a-menu-item
+                      key={element?.name}
+                      v-slots={{ icon }}
+                      onClick={() => goto(element)}
+                    >
+                      {t(element?.meta?.locale || '')}
+                    </a-menu-item>
+                  );
+                nodes.push(node as never);
+              }
+
+              // const node =
+              //   element?.children && element?.children.length !== 0 ? (
+              //     <a-sub-menu
+              //       key={element?.name}
+              //       v-slots={{
+              //         icon,
+              //         title: () => h(compile(t(element?.meta?.locale || ''))),
+              //       }}
+              //     >
+              //       {travel(element?.children)}
+              //     </a-sub-menu>
+              //   ) : (
+              //     <a-menu-item
+              //       key={element?.name}
+              //       v-slots={{ icon }}
+              //       onClick={() => goto(element)}
+              //     >
+              //       {t(element?.meta?.locale || '')}
+              //     </a-menu-item>
+              //   );
+              // nodes.push(node as never);
+            });
+          }
+          return nodes;
+        }
+        return travel(menuTree.value);
+      };
+
+      return () => (
+        <a-menu
+          mode={topMenu.value ? 'horizontal' : 'vertical'}
+          v-model:collapsed={collapsed.value}
+          v-model:open-keys={openKeys.value}
+          show-collapse-button={appStore.device !== 'mobile'}
+          auto-open={false}
+          selected-keys={selectedKey.value}
+          auto-open-selected={true}
+          level-indent={34}
+          style="height: 100%;width:100%;"
+          onCollapse={setCollapse}
+          ref={'menuList'}
+        >
+          {renderSubMenu()}
+        </a-menu>
+      );
+    },
+  });
+</script>
+
+<style lang="less" scoped>
+  :deep(.arco-menu-inner) {
+    .arco-menu-inline-header {
+      display: flex;
+      align-items: center;
+    }
+    .arco-icon {
+      &:not(.arco-icon-down) {
+        font-size: 18px;
+      }
+    }
+  }
+  .bookButton {
+    width: 100%;
+  }
+  .icon {
+    width: 18px;
+    height: 18px;
+  }
+  .tag {
+    width: 30px;
+    height: 17px;
+    background: linear-gradient(300deg, #ff2727 0%, #ff5d5d 100%);
+    border-radius: 8px 0px 8px 0px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    justify-content: center;
+    font-size: 10px;
+    font-family: Source Han Sans CN-Medium, Source Han Sans CN;
+    font-weight: 500;
+    .text {
+      transform: scale(0.8);
+    }
+  }
+</style>

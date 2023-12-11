@@ -1,0 +1,30 @@
+{
+  "id": "4330529",
+  "name": "魔力智投PC端",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "38142035",
+      "name": "视频号",
+      "font_class": "a-zu583",
+      "unicode": "e710",
+      "unicode_decimal": 59152
+    },
+    {
+      "icon_id": "37849358",
+      "name": "视频号",
+      "font_class": "shipinhao",
+      "unicode": "eb73",
+      "unicode_decimal": 60275
+    },
+    {
+      "icon_id": "38135313",
+      "name": "sph",
+      "font_class": "a-lujing178-lunkuo",
+      "unicode": "e70f",
+      "unicode_decimal": 59151
+    }
+  ]
+}

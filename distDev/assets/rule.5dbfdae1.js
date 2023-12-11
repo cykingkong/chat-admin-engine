@@ -1,0 +1,1 @@
+import{ah as u,ai as s}from"./index.f3be9d6e.js";function i(t){return u.get("/api/shutdown/shutdownRuleGrid",{params:t,paramsSerializer:n=>s.stringify(n)})}function o(t){return u.post("/api/shutdown/shutdownRuleAdd",t)}function d(t){return u.post("/api/shutdown/shutdownRuleEdit",t)}export{o as a,d as b,i as s};
