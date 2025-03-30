@@ -12,7 +12,7 @@ export interface LoginRes {
   token: string;
 }
 export function login(data: any) {
-  return axios.post<any>('/api/member/login', data);
+  return axios.post<any>('/ztapi/user/login', data);
 }
 export function ssoToken(params: any) {
   return axios.get<any>('/api/member/ssoToken', {
@@ -28,7 +28,7 @@ export function logout() {
 }
 
 export function getUserInfo() {
-  return axios.get<any>('/api/member/info');
+  return axios.get<any>('/ztapi/user/info');
 }
 
 export function updateUser(data: any) {

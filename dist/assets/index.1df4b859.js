@@ -1,1 +1,0 @@
-import{_ as a}from"./index.a302575e.js";import{d as s,D as e,aF as o,aJ as t,aO as r,aP as d,u as n,bB as _}from"./arco.0e1801a1.js";const c=a(s({__name:"index",setup:a=>(a,s)=>{const c=_;return e(),o(c,{class:"footer"},{default:t((()=>[r("魔力智投 - "+d(n("v1.4.2")),1)])),_:1})}}),[["__scopeId","data-v-360df084"]]);export{c as F};

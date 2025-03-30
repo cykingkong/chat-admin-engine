@@ -1,16 +1,16 @@
 <template>
   <div class="banner">
     <div class="midImg">
-      <img
+      <!-- <img
         src="https://img.adyinqing.com/upai_shop/d57ook4m1689572521358"
         alt=""
-      />
+      /> -->
     </div>
     <div class="logo">
-      <img
+      <!-- <img
         src="https://img.adyinqing.com/upai_shop/3h1sxrv71689912194354"
         alt=""
-      />
+      /> -->
     </div>
     <!-- <div class="banner-inner">
       <a-carousel class="carousel" animation-name="fade">

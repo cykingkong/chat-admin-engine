@@ -1,4 +1,5 @@
 {
+  "comment":"menuFromServer 是否从服务端获取菜单; ",
   "theme": "light",
   "colorWeak": false,
   "navbar": true,
@@ -12,6 +13,6 @@
   "globalSettings": false,
   "device": "desktop",
   "tabBar": true,
-  "menuFromServer": true,
+  "menuFromServer": false,
   "serverMenu": []
 }

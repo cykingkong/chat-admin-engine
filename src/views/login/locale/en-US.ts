@@ -1,5 +1,5 @@
 export default {
-  'login.form.title': 'Login to 魔力智投',
+  'login.form.title': 'Login to 客服后台',
   'login.form.userName.errMsg': 'Username cannot be empty',
   'login.form.password.errMsg': 'Password cannot be empty',
   'login.form.login.errMsg': 'Login error, refresh and try again',

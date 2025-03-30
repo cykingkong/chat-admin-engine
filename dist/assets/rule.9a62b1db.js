@@ -1,1 +1,0 @@
-import{j as t,q as s}from"./index.a302575e.js";function n(n){return t.get("/api/shutdown/shutdownRuleGrid",{params:n,paramsSerializer:t=>s.stringify(t)})}function a(s){return t.post("/api/shutdown/shutdownRuleAdd",s)}function r(s){return t.post("/api/shutdown/shutdownRuleEdit",s)}export{a,r as b,n as s};

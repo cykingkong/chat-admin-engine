@@ -80,7 +80,7 @@
               {{ $t('login.form.rememberPassword') }}</span
             >
           </a-checkbox>
-          <a-link
+          <!-- <a-link
             style="color: #0c2963"
             @click="
               loginType = 3;
@@ -88,7 +88,7 @@
               loginActive = 0;
             "
             >注册账号</a-link
-          >
+          > -->
         </div>
         <a-button
           type="primary"
@@ -99,14 +99,14 @@
         >
           {{ $t('login.form.login') }}
         </a-button>
-        <a-button
+        <!-- <a-button
           type="text"
           long
           class="login-form-register-btn fontColorClass"
           @click="resetEditForm()"
         >
           忘记密码
-        </a-button>
+        </a-button> -->
         <!-- <a-button
           type="text"
           long
@@ -266,7 +266,7 @@
       <a-space :size="16" direction="vertical">
         <div class="login-form-password-actions">
           <div class=""></div>
-          <a-link
+          <!-- <a-link
             v-if="loginType === 2"
             style="color: #0c2963"
             @click="
@@ -275,7 +275,7 @@
               loginActive = 0;
             "
             >注册账号</a-link
-          >
+          > -->
         </div>
         <a-button
           type="primary"
@@ -458,7 +458,7 @@
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
-  const loginTitleList = ref(['密码登录', '验证码登录']);
+  const loginTitleList = ref(['密码登录']);
   const loginType = ref(1);
   const loginText = ref('登录');
   const buttonText = ref('注册');
@@ -829,7 +829,7 @@
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         console.log(router);
         router.push({
-          name: (redirect as string) || 'Workplace',
+          name: (redirect as string) || 'adminList',
           query: {
             ...othersQuery,
           },

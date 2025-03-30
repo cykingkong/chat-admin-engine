@@ -9,9 +9,7 @@ export function getMenu(params: any) {
     },
   });
 }
-export function memberEdit(data: any) {
-  return axios.post<any>('/admin/user/memberEdit', data);
-}
+
 export function insertMenu(data: any) {
   return axios.post<any>('/admin/user/insertMenu', data);
 }
@@ -20,7 +18,7 @@ export function updateMenu(data: any) {
 }
 // 账号管理
 export function getUserPage(params: any) {
-  return axios.get<any>('/api/user/getUserPage', {
+  return axios.get<any>('/ztapi/kfuser/kfUserManageGrid', {
     params,
     paramsSerializer: (obj) => {
       return qs.stringify(obj);
@@ -28,13 +26,16 @@ export function getUserPage(params: any) {
   });
 }
 export function insertUser(data: any) {
-  return axios.post<any>('/api/user/insertUser', data);
+  return axios.post<any>('/ztapi/kfuser/kfUserManageAdd', data);
 }
 export function updateUser(data: any) {
-  return axios.post<any>('/api/user/updateUser', data);
+  return axios.post<any>('/ztapi/kfuser/kfUserManageUpdate', data);
 }
 export function deleteUser(data: any) {
-  return axios.post<any>('/api/user/deleteUser', data);
+  return axios.post<any>('/ztapi/kfuser/kfUserManageDel', data);
+}
+export function memberEdit(data: any) {
+  return axios.post<any>('/ztapi/user/memberEdit', data);
 }
 // 部门管理
 export function getDepment(params: any) {

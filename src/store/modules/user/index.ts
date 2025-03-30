@@ -54,51 +54,51 @@ const useUserStore = defineStore('user', {
       const res = await getUserInfo();
       res.data.role = 'admin';
 
-      if (res.data.userInfo.memberDepId === 0) {
-        res.data.role = 'superAdmin';
-        if (res.data.grayscaleType === 1) {
-          res.data.role = 'grayscaleSuperAdmin';
-        }
-      } else {
-        res.data.plantDataGuidance = res.data.userInfo.plantDataGuidance || 0;
-        res.data.guidance = res.data.userInfo.guidance || 0;
-      }
+      // if (res.data.userInfo.memberDepId === 0) {
+      //   res.data.role = 'superAdmin';
+      //   if (res.data.grayscaleType === 1) {
+      //     res.data.role = 'grayscaleSuperAdmin';
+      //   }
+      // } else {
+      //   res.data.plantDataGuidance = res.data.userInfo.plantDataGuidance || 0;
+      //   res.data.guidance = res.data.userInfo.guidance || 0;
+      // }
 
       //  else {
       //   res.data.role = 'dept';
       // }
-      if (res.data.guidance === 0) {
-        localStorage.setItem('GuideStep', '0');
-      }
-      const sysRes = await getSysConfig();
-      res.data.sysConfig = sysRes.data;
+      // if (res.data.guidance === 0) {
+      //   localStorage.setItem('GuideStep', '0');
+      // }
+      // const sysRes = await getSysConfig();
+      // res.data.sysConfig = sysRes.data;
 
       this.setInfo(res.data);
 
-      const oldVersion = import.meta.env.VITE_KB_VERSION;
-      const versionDescArr = res.data.versionDesc.split('\n');
-      const buildVersionDesc = () => {
-        const arr = versionDescArr.map((item: any) => {
-          return h('div', { style: 'margin-bottom:10px' }, item);
-        });
-        return arr;
-      };
-      console.log(buildVersionDesc());
-      console.log(versionDescArr);
-      if (compareVersions(res.data.version, oldVersion) === 1) {
-        Modal.open({
-          title: `【魔力智投】${res.data.version} 版本更新`,
-          content: () => h(buildVersionDesc),
-          mask: true,
-          simple: true,
-          width: 'auto',
-          okText: '立即更新',
-          async onOk() {
-            // eslint-disable-next-line no-restricted-globals
-            location.reload();
-          },
-        });
-      }
+      // const oldVersion = import.meta.env.VITE_KB_VERSION;
+      // const versionDescArr = res.data.versionDesc.split('\n');
+      // const buildVersionDesc = () => {
+      //   const arr = versionDescArr.map((item: any) => {
+      //     return h('div', { style: 'margin-bottom:10px' }, item);
+      //   });
+      //   return arr;
+      // };
+      // console.log(buildVersionDesc());
+      // console.log(versionDescArr);
+      // if (compareVersions(res.data.version, oldVersion) === 1) {
+      //   Modal.open({
+      //     title: `客服后台${res.data.version} 版本更新`,
+      //     content: () => h(buildVersionDesc),
+      //     mask: true,
+      //     simple: true,
+      //     width: 'auto',
+      //     okText: '立即更新',
+      //     async onOk() {
+      //       // eslint-disable-next-line no-restricted-globals
+      //       location.reload();
+      //     },
+      //   });
+      // }
     },
     async getInfo() {
       const res = await getUserInfo();
@@ -110,8 +110,6 @@ const useUserStore = defineStore('user', {
     async login(loginForm: any) {
       try {
         const res = await userLogin(loginForm);
-        localStorage.setItem('closeDialog', '0');
-
         setToken(res.data.token);
       } catch (err) {
         clearToken();

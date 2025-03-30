@@ -1,134 +1,7 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['系统管理', '子账号管理']" />
-    <a-card class="general-card" title="子账号管理">
-      <a-row>
-        <a-col :flex="1">
-          <a-form :model="formModel" auto-label-width label-align="left">
-            <a-row :gutter="16">
-              <a-col :span="8">
-                <a-form-item
-                  field="memberNickname"
-                  label="账户昵称"
-                  label-col-flex="60px"
-                >
-                  <a-input
-                    v-model="formModel.memberNickname"
-                    placeholder="请输入账户昵称"
-                    allow-clear
-                    @press-enter="search"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="memberAccount"
-                  label="登录账号"
-                  label-col-flex="60px"
-                >
-                  <a-input
-                    v-model="formModel.memberAccount"
-                    placeholder="请输入登录账号"
-                    allow-clear
-                    @press-enter="search"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="memberDepId"
-                  label="所属部门"
-                  label-col-flex="60px"
-                >
-                  <a-cascader
-                    v-model="formModel.memberDepId"
-                    :options="depmentArr"
-                    check-strictly
-                    allow-clear
-                    :field-names="{
-                      value: 'memberDepId',
-                      label: 'memberDepName',
-                    }"
-                    placeholder="请选择所属部门"
-                    @clear="clearDep"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="memberStatus"
-                  label="状态"
-                  label-col-flex="30px"
-                >
-                  <a-select
-                    v-model="formModel.memberStatus"
-                    allow-clear
-                    placeholder="请选择状态"
-                  >
-                    <a-option
-                      v-for="(el, key) in userStatusList"
-                      :key="key"
-                      :value="el.value"
-                      >{{ el.label }}</a-option
-                    >
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="roleId" label="角色" label-col-flex="30px">
-                  <a-select
-                    v-model="formModel.roleId"
-                    allow-clear
-                    placeholder="请选择角色"
-                  >
-                    <a-option
-                      v-for="(el, key) in roleList"
-                      :key="key"
-                      :value="el.roleId"
-                      >{{ el.roleName }}</a-option
-                    >
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8"> </a-col>
-              <a-col :span="8">
-                <a-form-item field="number" :hide-label="true">
-                  <a-space :size="18">
-                    <a-button type="primary" class="searchBtn" @click="search">
-                      筛选
-                    </a-button>
-                    <a-button
-                      type="outline"
-                      class="refreshBtn"
-                      @click="search()"
-                    >
-                      刷新
-                    </a-button>
-                    <a-typography-text type="primary">
-                      <a-link href="javascript:void(0)" @click="refresh()"
-                        >重置筛选条件</a-link
-                      >
-                    </a-typography-text>
-                  </a-space>
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form>
-        </a-col>
-
-        <!-- <a-divider style="height: 42px" direction="vertical" />
-        <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
-            <a-button type="primary" @click="search">
-              <template #icon>
-                <icon-search />
-              </template>
-              搜索
-            </a-button>
-          </a-space>
-        </a-col> -->
-      </a-row>
-      <a-divider style="margin-top: 0" />
+    <Breadcrumb :items="['系统管理', '客服管理']" />
+    <a-card class="general-card" title="客服管理">
       <a-row style="margin-bottom: 16px">
         <a-col :span="16">
           <a-space>
@@ -136,7 +9,7 @@
               <template #icon>
                 <icon-plus />
               </template>
-              新建子账号
+              新建客服账号
             </a-button>
           </a-space>
         </a-col>
@@ -164,28 +37,28 @@
           <a-table-column title="账户昵称" align="center">
             <template #cell="{ record }">
               <!-- <a-link href="javascript:void(0)" @click="userDetail(record)"> -->
-              {{ record.memberNickname || 0 }}
+              {{ record.account || 0 }}
               <!-- </a-link> -->
             </template>
           </a-table-column>
           <a-table-column title="登录账号" align="center">
             <template #cell="{ record }">
-              {{ record.memberAccount || '-' }}
+              {{ record.account || '-' }}
             </template>
           </a-table-column>
-          <a-table-column title="用户角色" align="center">
+          <a-table-column title="最大处理咨询用户数" align="center">
             <template #cell="{ record }">
-              {{ record.roleName || '-' }}
+              {{ record.maxConnections || '-' }}
             </template>
           </a-table-column>
-          <a-table-column title="所属部门" align="center">
+          <a-table-column title="状态" align="center">
             <template #cell="{ record }">
-              {{ record.member_dep_name || '-' }}
+              {{ record.status == 1 ? '启用' : '禁用' || '-' }}
             </template>
           </a-table-column>
-          <a-table-column title="账号状态" align="center">
+          <a-table-column title="在线状态" align="center">
             <template #cell="{ record }">
-              {{ userStatus[record.memberStatus] || 0 }}
+              {{ record.onlineStatus ? '在线' : '离线' || '-' }}
             </template>
           </a-table-column>
           <a-table-column title="创建时间" align="center">
@@ -197,12 +70,11 @@
               }}
             </template>
           </a-table-column>
-          <a-table-column title="备注" align="center">
+          <!-- <a-table-column title="备注" align="center">
             <template #cell="{ record }">
               {{ record.memberUserRemark || '-' }}
             </template>
-          </a-table-column>
-
+          </a-table-column> -->
           <a-table-column title="操作" data-index="operations" align="center">
             <template #cell="{ record }">
               <a-space>
@@ -221,7 +93,7 @@
                   停用
                 </a-button> -->
                 <a-popconfirm
-                  content="确认是否删除此子账号"
+                  content="确认是否删除此客服账号"
                   ok-text="确认"
                   @ok="handleClickDel(record)"
                 >
@@ -241,7 +113,7 @@
         <div></div>
         <div>
           <a-pagination
-            v-model:current="pagination.pageIndex"
+            v-model:current="pagination.page"
             v-model:page-size="pagination.pageSize"
             :total="pagination.total"
             :show-total="true"
@@ -257,13 +129,13 @@
     <a-modal
       v-model:visible="formVisible"
       :title="formTitle"
-      width="900px"
+      width="500px"
       @cancel="handleCancel"
       @before-ok="handleBeforeOk"
     >
       <a-form
         ref="formRef"
-        style="margin: 0 auto; width: 800px"
+        style="margin: 0 auto; width: 400px"
         :model="editModel"
         :label-col-props="{ span: 6 }"
         :wrapper-col-props="{ span: 18 }"
@@ -278,7 +150,7 @@
           >
             <a-form-item
               v-if="editModel.type != 3"
-              field="memberNickname"
+              field="nickname"
               label="用户昵称"
               :rules="[
                 {
@@ -288,15 +160,15 @@
               ]"
             >
               <a-input
-                v-model="editModel.memberNickname"
+                v-model="editModel.nickname"
                 allow-clear
                 placeholder="请填写用户昵称"
               />
             </a-form-item>
             <a-form-item
               v-if="editModel.type != 3"
-              field="memberAccount"
-              label="登录手机号"
+              field="account"
+              label="登录账号"
               :rules="[
                 {
                   required: true,
@@ -305,14 +177,14 @@
               ]"
             >
               <a-input
-                v-model="editModel.memberAccount"
+                v-model="editModel.account"
                 allow-clear
-                placeholder="请填写登录手机号"
+                placeholder="请填写登录账号"
               />
             </a-form-item>
             <a-form-item
               v-if="editModel.type != 3"
-              field="memberPassword"
+              field="password"
               label="登录密码"
               :rules="[
                 {
@@ -323,35 +195,32 @@
             >
               <!-- <a-input-password v-model="editModel.memberPassword" allow-clear  v-if="editModel.value===1"/> -->
               <a-input
-                v-model="editModel.memberPassword"
+                v-model="editModel.password"
                 allow-clear
                 placeholder="请填写登录密码"
               />
             </a-form-item>
             <a-form-item
               v-if="editModel.type != 3"
-              field="memberDepId"
-              label="所属部门"
+              field="maxConnections"
+              label="最大咨询数"
               :rules="[
                 {
                   required: true,
-                  message: '请选择所属部门',
+                  message: '请填写最大咨询数',
                 },
               ]"
             >
-              <a-cascader
-                v-model="editModel.memberDepId"
-                :options="depmentArr"
-                check-strictly
+              <a-input-number
+                v-model="editModel.maxConnections"
                 allow-clear
-                :field-names="{ value: 'memberDepId', label: 'memberDepName' }"
-                placeholder="请选择所属部门"
+                placeholder="请填写最大咨询数"
               />
             </a-form-item>
 
             <a-form-item
               v-if="editModel.type != 3"
-              field="memberStatus"
+              field="status"
               label="状态"
               :rules="[
                 {
@@ -361,7 +230,7 @@
               ]"
             >
               <a-select
-                v-model="editModel.memberStatus"
+                v-model="editModel.status"
                 allow-clear
                 placeholder="请选择状态"
               >
@@ -373,85 +242,26 @@
                 >
               </a-select>
             </a-form-item>
-
-            <a-form-item field="memberUserRemark" label="备注">
-              <a-input
-                v-model="editModel.memberUserRemark"
-                placeholder="请填写备注"
-              />
-            </a-form-item>
-          </a-card>
-
-          <a-card
-            class="general-card"
-            style="width: 400px"
-            :header-style="{ paddingBottom: '0' }"
-            :body-style="{ padding: '17px 20px 21px 20px' }"
-            title="权限配置"
-          >
             <a-form-item
-              field="roleId"
-              label="用户角色"
+              v-if="editModel.type != 3"
+              field="status"
+              label="状态"
               :rules="[
                 {
                   required: true,
-                  message: '请选择数据权限',
+                  message: '请选择状态',
                 },
               ]"
             >
-              <a-select
-                v-model="editModel.roleId"
-                allow-clear
-                placeholder="请选择用户角色"
-                @change="roleIdChange"
-              >
-                <a-option
-                  v-for="(el, key) in roleList"
-                  :key="key"
-                  :value="el.roleId"
-                  >{{ el.roleName }}</a-option
-                >
-              </a-select>
-            </a-form-item>
-
-            <a-form-item label="数据权限">
-              <a-typography-text>
-                {{ dataRoleText }}
-              </a-typography-text>
-              <!-- <a-select
-            v-model="editModel.dataRole"
-            allow-clear
-            placeholder="请选择数据权限"
-          >
-            <a-option
-              v-for="(el, key) in roleArr"
-              :key="key"
-              :value="el.value"
-              >{{ el.label }}</a-option
-            >
-          </a-select> -->
-            </a-form-item>
-            <a-form-item label="菜单权限" style="position: relative">
-              <div class="treeMark"> </div>
-              {{ checkedKeys.length === 0 ? '请先选择用户角色' : '' }}
-              <a-tree
-                v-show="checkedKeys.length > 0"
-                v-model:checked-keys="checkedKeys"
-                :checkable="true"
-                :field-names="{
-                  key: 'menuId',
-                  title: 'menuName',
-                  children: 'children',
-                  icon: 'menuIcon',
-                }"
-                :only-check-leaf="true"
-                :check-strictly="false"
-                :default-expand-all="true"
-                checked-strategy="all"
-                :data="treeData"
-              >
-              </a-tree>
-            </a-form-item>
+              <a-upload
+                :file-list="fileList"
+                :limit="1"
+                image-preview
+                list-type="picture-card"
+                :accept="'.doc,.docx,.pdf,.png'"
+                :custom-request="protraitUpload"
+                @before-remove="beforeRemove"
+            /></a-form-item>
           </a-card>
         </a-space>
       </a-form>
@@ -467,6 +277,7 @@
   import { Message } from '@arco-design/web-vue';
   import dayjs from 'dayjs';
   import { FormInstance } from '@arco-design/web-vue/es/form';
+  import { uploadFile } from '@/api/tool';
   import {
     getUserPage,
     memberEdit,
@@ -488,6 +299,7 @@
     { value: 1, label: '启用' },
   ]);
   const checkedKeys = ref<any>([]);
+  const fileList = ref([]);
   const treeData = ref<any>([]);
   const getMenuData = async (params: any) => {
     try {
@@ -549,12 +361,7 @@
   const { t } = useI18n();
   const roleList = ref<any[]>([]);
   const dataRoleText = ref('请先选择用户角色');
-  listMethods.getRoleGrid().then((res: any) => {
-    if (res.grid) {
-      roleList.value = res.grid;
-    }
-    console.log(roleList.value);
-  });
+
   const roleArr = ref<any>([
     { value: 0, label: '所有' },
     { value: 1, label: '本部门及以下数据权限 ' },
@@ -586,13 +393,13 @@
 
     return ar;
   };
-  const getDepArr = async (params: { pageIndex: 1; pageSize: 20 }) => {
+  const getDepArr = async (params: { page: 1; pageSize: 20 }) => {
     setLoading(true);
     try {
       const { data } = await getDepment(params);
       depmentArr.value = clearAllChildren(data.grid);
       console.log(flatArr(depmentArr.value));
-      // pagination.current = params.pageIndex;
+      // pagination.current = params.page;
     } catch (err) {
       // console.log(err);
       // you can report use errorHandler or other
@@ -600,7 +407,7 @@
       setLoading(false);
     }
   };
-  getDepArr({ pageIndex: 1, pageSize: 20 });
+  // getDepArr({ page: 1, pageSize: 20 });
   const renderData = ref<any[]>([]);
   const formModel = ref(generateFormModel());
   // const userDetail = async (row: any) => {
@@ -610,25 +417,29 @@
   // page
   const basePagination: any = {
     current: 1,
-    pageIndex: 1,
+    page: 1,
     pageSize: 20,
   };
   const pagination = reactive({
     ...basePagination,
   });
 
-  getMenuData({
-    ...basePagination,
-  } as unknown as any);
+  // getMenuData({
+  //   ...basePagination,
+  // } as unknown as any);
   // list data
-  const fetchData = async (params: { pageIndex: 1; pageSize: 20 }) => {
+  const fetchData = async (params: { page: 1; page_size: 20 }) => {
     setLoading(true);
     try {
-      const { data } = await getUserPage(params);
-      renderData.value = data.grid;
-      pagination.current = params.pageIndex;
-      pagination.pageIndex = params.pageIndex;
-      pagination.total = data.total;
+      const { data, code } = await getUserPage(params);
+      if (code === 200) {
+        renderData.value = data.rows || [];
+        pagination.current = params.page;
+        pagination.page = params.page;
+        pagination.total = data.total;
+      } else {
+        renderData.value = [];
+      }
     } catch (err) {
       console.log(err);
       // you can report use errorHandler or other
@@ -638,7 +449,7 @@
   };
 
   const onPageChange = (current: number) => {
-    basePagination.pageIndex = current;
+    basePagination.page = current;
     basePagination.current = current;
     fetchData({
       ...basePagination,
@@ -649,14 +460,37 @@
   // 搜索
   const search = () => {
     onPageChange(1);
-    getDepArr({ pageIndex: 1, pageSize: 20 });
   };
 
   fetchData({
     ...basePagination,
     ...formModel.value,
   } as unknown as any);
+  const beforeRemove = () => {
+    return new Promise((resolve) => {
+      fileList.value = [];
+      editModel.value.avatar = '';
 
+      resolve(true);
+    });
+  };
+  const protraitUpload = async (option: any) => {
+    const { fileItem } = option;
+    const param = new FormData();
+    param.append('file', fileItem.file);
+    const { data, code } = await uploadFile(param);
+    if (code === 200) {
+      fileList.value = [
+        {
+          uid: fileItem.uid,
+          name: fileItem.file.name,
+          url: data.url,
+        },
+      ];
+      editModel.value.avatar = data.url;
+      console.log(editModel.value, 'fasda');
+    }
+  };
   const pageSizeChange = (size: number) => {
     // console.log(size);
     basePagination.pageSize = size;
@@ -668,18 +502,15 @@
     formModel.value = generateFormModel();
   };
   const formVisible = ref(false);
-  const formTitle = ref('新增子账号');
+  const formTitle = ref('新增客服帐号');
   const editFormModel = () => {
     return {
-      memberAccount: '',
-      memberUserRemark: '',
-      memberNickname: '',
-      memberPassword: '',
-      memberDepId: undefined,
-      memberUserId: undefined,
-      roleId: undefined,
-      memberStatus: 1,
-      dataRole: undefined,
+      account: '',
+      nickname: '',
+      password: '',
+      avatar: '',
+      kfId: undefined,
+      status: 1,
       type: 1,
     };
   };
@@ -687,37 +518,32 @@
 
   const handleClick = (type: number, row?: any) => {
     if (type === 2) {
-      formTitle.value = '编辑子账号信息';
-      editModel.value.memberAccount = row.memberAccount;
-      editModel.value.memberNickname = row.memberNickname;
-      editModel.value.memberUserRemark = row.memberUserRemark;
-      editModel.value.memberDepId = row.memberDepId;
-      editModel.value.dataRole = row.dataRole;
-      editModel.value.roleId = row.roleId ? row.roleId : undefined;
-      dataRoleText.value = roleArr.value[row.roleData].label;
-      checkedKeys.value = [];
-      if (row.roleId) {
-        listMethods
-          .getMeunDataByRole({
-            roleId: row.roleId || 0,
-          })
-          .then((res: any) => {
-            checkedKeys.value = getAllMenuIds(res.grid);
-          });
-      }
-
-      editModel.value.memberStatus = row.memberStatus;
-      editModel.value.memberUserId = row.memberUserId;
-      editModel.value.memberPassword = '';
+      formTitle.value = '编辑客服账号信息';
+      editModel.value.account = row.account;
+      editModel.value.kfId = row.kfId;
+      editModel.value.nickname = row.nickname;
+      editModel.value.maxConnections = row.maxConnections;
+      editModel.value.status = row.status;
+      editModel.value.password = '';
+      editModel.value.avatar = row.avatar;
       editModel.value.type = 2;
+      if (row.avatar) {
+        fileList.value = [
+          {
+            uid: row.userId,
+            name: row.avatar,
+            url: row.avatar,
+          },
+        ];
+      }
     } else if (type === 3) {
-      formTitle.value = '修改子账号密码';
+      formTitle.value = '修改客服账号密码';
 
       editModel.value.sysUserId = row.userId;
       editModel.value.userPassword = '';
       editModel.value.type = 3;
     } else {
-      formTitle.value = '新增子账号';
+      formTitle.value = '新增客服账号';
       editModel.value = editFormModel();
       dataRoleText.value = '请先选择用户角色';
       checkedKeys.value = [];
@@ -776,10 +602,10 @@
   };
   const handleClickDel = async (row: any) => {
     const { data } = await deleteUser({
-      memberUserId: row.memberUserId,
+      kfId: row.kfId,
     });
     Message.success({
-      content: '成功删除子账号',
+      content: '成功删除客服账号',
       duration: 5 * 1000,
     });
     search();
