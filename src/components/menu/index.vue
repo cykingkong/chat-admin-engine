@@ -103,75 +103,15 @@
                 : null;
 
               if (element?.children && element?.children.length === 1) {
-                const node =
-                  element?.children[0].meta?.locale === '小店管理助手' ? (
-                    <a-menu-item
-                      key={element?.children[0].name}
-                      onClick={() => goto(element?.children[0])}
-                    >
-                      <a-space size="medium">
-                        <img
-                          src="https://img.adyinqing.com/upai_shop/afcxgr7l1688975468009"
-                          class="icon"
-                        />
-                        <a-space>
-                          {t(element?.children[0].meta?.locale || '')}
-                          {
-                            <span class="tag">
-                              <span class="text">New</span>
-                            </span>
-                          }
-                        </a-space>
-                      </a-space>
-                    </a-menu-item>
-                  ) : (element?.children[0].meta?.locale === '会员服务' &&
-                      userStore.$state.userInfo.memberDepId == 0) ||
-                    element?.children[0].meta?.locale != '会员服务' ? (
-                    <a-menu-item
-                      key={element?.children[0].name}
-                      v-slots={{ icon }}
-                      onClick={() => goto(element?.children[0])}
-                    >
-                      {t(element?.children[0].meta?.locale || '')}
-                    </a-menu-item>
-                  ) : (
-                    ''
-                  );
-                // const node = (
-                //   <a-menu-item
-                //     key={element?.children[0].name}
-                //     v-slots={{ icon }}
-                //     onClick={() => goto(element.children[0])}
-                //   >
-                //     {element?.children[0].meta?.locale === '会员服务' ? (
-                //       <a-space size="medium">
-                //         <img
-                //           src="https://img.adyinqing.com/upai_shop/afcxgr7l1688975468009"
-                //           class="icon"
-                //         />
-                //         <a-space>
-                //           {t(element?.children[0].meta?.locale || '')}
-                //           {userStore.$state.isBuy === 1 ? (
-                //             <span class="tag">
-                //               <span class="text">限时优惠</span>
-                //             </span>
-                //           ) : null}
-                //         </a-space>
-                //       </a-space>
-                //     ) : (
-                //       t(element?.children[0].meta?.locale || '')
-                //     )}
-                //   </a-menu-item>
-                // );
-                // const node = (
-                //   <a-menu-item
-                //     key={element?.children[0].name}
-                //     v-slots={{ icon }}
-                //     onClick={() => goto(element?.children[0])}
-                //   >
-                //     {t(element?.children[0].meta?.locale || '')}
-                //   </a-menu-item>
-                // );
+                const node = (
+                  <a-menu-item
+                    key={element?.children[0].name}
+                    v-slots={{ icon }}
+                    onClick={() => goto(element?.children[0])}
+                  >
+                    {t(element?.children[0].meta?.locale || '')}
+                  </a-menu-item>
+                );
                 nodes.push(node as never);
               } else {
                 const node =

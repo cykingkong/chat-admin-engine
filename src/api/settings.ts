@@ -25,6 +25,15 @@ export function getUserPage(params: any) {
     },
   });
 }
+export function getToken(params: any) {
+  return axios.get<any>('ztapi/kfuser/getToken', {
+    params,
+    paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 export function insertUser(data: any) {
   return axios.post<any>('/ztapi/kfuser/kfUserManageAdd', data);
 }
@@ -34,8 +43,38 @@ export function updateUser(data: any) {
 export function deleteUser(data: any) {
   return axios.post<any>('/ztapi/kfuser/kfUserManageDel', data);
 }
+
+// 商户管理
+export function userGrid(params: any) {
+  return axios.get<any>('ztapi/user/userGrid', {
+    params,
+    paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+export function userKfConfigInfo(params: any) {
+  return axios.get<any>('ztapi/user/userKfConfigInfo', {
+    params,
+    paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+export function userAdd(data: any) {
+  return axios.post<any>('ztapi/user/userAdd', data);
+}
 export function memberEdit(data: any) {
   return axios.post<any>('/ztapi/user/memberEdit', data);
+}
+export function userDel(data: any) {
+  return axios.post<any>('ztapi/user/userDel', data);
+}
+export function userUpdate(data: any) {
+  return axios.post<any>('ztapi/user/userUpdate', data);
+}
+export function updateUserKfConfigInfo(data: any) {
+  return axios.post<any>('ztapi/user/userKfConfigUpdate', data);
 }
 // 部门管理
 export function getDepment(params: any) {

@@ -18,19 +18,19 @@ export default {
       meta: {
         locale: '客服账号管理',
         requiresAuth: true,
-        roles: ['*'],
+        roles: ['superAdmin'],
       },
     },
-    // {
-    //   path: 'depmentList',
-    //   name: 'depmentList',
-    //   component: () => import('@/views/settings/depment-list/list.vue'),
-    //   meta: {
-    //     locale: '部门管理',
-    //     requiresAuth: true,
-    //     roles: ['*'],
-    //   },
-    // },
+    {
+      path: 'userList',
+      name: 'userList',
+      component: () => import('@/views/settings/user-list/list.vue'),
+      meta: {
+        locale: '商户管理',
+        requiresAuth: true,
+        roles: ['superAdmin'],
+      },
+    },
     // {
     //   path: 'roleList',
     //   name: 'roleList',

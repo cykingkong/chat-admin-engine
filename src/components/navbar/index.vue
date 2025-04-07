@@ -2,44 +2,12 @@
   <div class="navbar">
     <!-- <div class="guide_overlay"></div>
     <div class="guide_highlight guide_highlight_mask"></div> -->
-    <div>
-      <a-tooltip position="left">
-        <template #content>
-          <a-image
-            width="200"
-            height="200"
-            src="https://img.adyinqing.com/upai_shop/q2pf7ijc1701684291556"
-          ></a-image>
-        </template>
-
-        <!-- <a-button class="service" type="outline">
-          <template #icon>
-            <icon-customer-service />
-          </template>
-          <span class="service-text"> 联系客服 </span>
-        </a-button> -->
-      </a-tooltip>
-    </div>
+    <div> </div>
     <div v-if="!kfShow" class="showKf" @click="hideIcon('show')"
       ><icon-double-left />
     </div>
     <div class="left-side">
       <a-space>
-        <!-- <a-image
-          alt="logo"
-          width="150"
-          :preview="false"
-          style="cursor: pointer"
-          src="https://img.adyinqing.com/upai_shop/80w5yg4h1694596249100"
-          @click="goHome"
-        /> -->
-        <!-- <div class="logoBg"> </div> -->
-        <!-- <a-typography-title
-          :style="{ margin: 0, fontSize: '18px' }"
-          :heading="5"
-        >
-          魔力智投
-        </a-typography-title> -->
         <icon-menu-fold
           v-if="!topMenu && appStore.device === 'mobile'"
           style="font-size: 22px; cursor: pointer"
@@ -74,10 +42,7 @@
                   :size="32"
                   :style="{ marginRight: '8px', cursor: 'pointer' }"
                 >
-                  <img
-                    alt="avatar"
-                    src="https://img.adyinqing.com/upai_shop/jhfbdg3b1682331087978"
-                  />
+                 
                 </a-avatar>
                 <span>{{
                   userStore.$state.userInfo.memberDepId
@@ -130,10 +95,6 @@
                   :size="32"
                   :style="{ marginRight: '8px', cursor: 'pointer' }"
                 >
-                  <!-- <img
-                    alt="avatar"
-                    src="https://img.adyinqing.com/upai_shop/jhfbdg3b1682331087978"
-                  /> -->
                   <icon-user />
                 </a-avatar>
                 <span> {{ userNickname }} </span>
@@ -142,22 +103,11 @@
           </div>
           <template #content>
             <div class="infoContent">
-              <div class="infoBox">
-                <!-- <img
-                  src="https://img.adyinqing.com/upai_shop/7svm57bk1688092401046"
-                  alt=""
-                  class="moli_logo"
-                /> -->
-                客服后台
-              </div>
+              <div class="infoBox"> 客服后台 </div>
               <div class="info">
                 <div class="titleLi" @click="handleToUserInfo">
                   编辑帐号信息
-                  <img
-                    src="https://img.adyinqing.com/upai_shop/sir9w2xm1688093132841"
-                    alt=""
-                    class="next_icon"
-                  />
+                  <icon-right class="right_icon" />
                 </div>
                 <div class="userInfo">
                   <div class="label"> 登录账号: </div>
@@ -185,11 +135,7 @@
                   </div>
                 </div> -->
                 <div class="logoutBtn" @click="handleLogout">
-                  <img
-                    src="https://img.adyinqing.com/upai_shop/88osk2591688093876167"
-                    alt=""
-                    class="close_icon"
-                  />
+                  <icon-export />
                   退出登录
                 </div>
               </div>
@@ -256,6 +202,7 @@
             </a-form-item>
 
             <a-form-item
+              v-if="userStoreState.role == 'superAdmin'"
               field=""
               label="头像"
               :rules="[
@@ -321,9 +268,6 @@
   const { changeLocale, currentLocale } = useLocale();
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
   const locales = [...LOCALE_OPTIONS];
-  const avatar = computed(() => {
-    return 'https://img.adyinqing.com/upai_shop/bs8uwttd1682329813471';
-  });
 
   const hideIcon = (type: any) => {
     if (type === 'hide') {
@@ -473,34 +417,8 @@
   };
   const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 
-  const playAudio = () => {
-    const sound = new Audio('https://img.adyinqing.com/y1115.mp3');
-    sound.play();
-  };
-  const fetchMsgData = async () => {
-    const { data } = await memberMsg({
-      pageIndex: 1,
-      pageSize: 20,
-      status: 0,
-    });
-    if (data.total > 0) {
-      if (data.total - storageTotal.value > 0) {
-        Notification.info({
-          closable: true,
-          content: data.grid[0].messageText,
-          duration: data.grid[0].messageClass === 1 ? 30000000 : 3000,
-        });
-        playAudio();
-      }
-    }
-
-    msgTotal.value = data.total;
-    storageTotal.value = data.total;
-    localStorage.setItem('msgTotal', data.total);
-    // setTimeout(fetchMsgData, 2000);
-  };
   if (route.name !== 'datav') {
-    fetchMsgData();
+    // fetchMsgData();
   }
   const jumpDataV = () => {
     // router.push({ name: 'datav', target: '_blank' });
@@ -598,13 +516,6 @@
     display: flex;
     align-items: center;
     padding-left: 20px;
-    .logoBg {
-      width: 150px;
-      background: url('https://img.adyinqing.com/upai_shop/rgz1inpz1682329655592')
-        no-repeat;
-      background-size: 100% 100%;
-      height: 59px;
-    }
   }
 
   .center-side {
@@ -818,5 +729,8 @@
   .infoContent {
     padding: 0;
     border: none;
+  }
+  .right_icon {
+    color: rgb(var(--arcoblue-6));
   }
 </style>

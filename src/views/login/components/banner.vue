@@ -1,17 +1,7 @@
 <template>
   <div class="banner">
-    <div class="midImg">
-      <!-- <img
-        src="https://img.adyinqing.com/upai_shop/d57ook4m1689572521358"
-        alt=""
-      /> -->
-    </div>
-    <div class="logo">
-      <!-- <img
-        src="https://img.adyinqing.com/upai_shop/3h1sxrv71689912194354"
-        alt=""
-      /> -->
-    </div>
+    <div class="midImg"> </div>
+    <div class="logo"> </div>
     <!-- <div class="banner-inner">
       <a-carousel class="carousel" animation-name="fade">
         <a-carousel-item v-for="item in carouselItem" :key="item.slogan">
@@ -69,7 +59,6 @@
       }
     }
     .midImg {
-      // background: url('https://img.adyinqing.com/upai_shop/d57ook4m1689572521358')
       //   no-repeat;
       // background-size: 100% 100%;
       width: 80%;

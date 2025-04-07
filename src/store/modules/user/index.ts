@@ -53,7 +53,12 @@ const useUserStore = defineStore('user', {
     async info() {
       const res = await getUserInfo();
       res.data.role = 'admin';
-
+      console.log(res.data, 'fsada');
+      if (res.data.isSupper) {
+        res.data.role = 'superAdmin';
+      } else {
+        res.data.role = 'kfAdmin';
+      }
       // if (res.data.userInfo.memberDepId === 0) {
       //   res.data.role = 'superAdmin';
       //   if (res.data.grayscaleType === 1) {

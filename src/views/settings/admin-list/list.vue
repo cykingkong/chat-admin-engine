@@ -34,11 +34,13 @@
         @page-change="onPageChange"
       >
         <template #columns>
-          <a-table-column title="账户昵称" align="center">
+          <a-table-column title="账户信息" align="center">
             <template #cell="{ record }">
-              <!-- <a-link href="javascript:void(0)" @click="userDetail(record)"> -->
-              {{ record.account || 0 }}
-              <!-- </a-link> -->
+              <a-space>
+                <a-avatar v-if="record.avatar" :image-url="record.avatar">
+                </a-avatar>
+                {{ record.nickname || 0 }}
+              </a-space>
             </template>
           </a-table-column>
           <a-table-column title="登录账号" align="center">
@@ -53,12 +55,12 @@
           </a-table-column>
           <a-table-column title="状态" align="center">
             <template #cell="{ record }">
-              {{ record.status == 1 ? '启用' : '禁用' || '-' }}
+              {{ record.status == 1 ? '启用' : '禁用' }}
             </template>
           </a-table-column>
           <a-table-column title="在线状态" align="center">
             <template #cell="{ record }">
-              {{ record.onlineStatus ? '在线' : '离线' || '-' }}
+              {{ record.onlineStatus ? '在线' : '离线' }}
             </template>
           </a-table-column>
           <a-table-column title="创建时间" align="center">
@@ -75,7 +77,12 @@
               {{ record.memberUserRemark || '-' }}
             </template>
           </a-table-column> -->
-          <a-table-column title="操作" data-index="operations" align="center">
+          <a-table-column
+            title="操作"
+            data-index="operations"
+            align="center"
+            :width="220"
+          >
             <template #cell="{ record }">
               <a-space>
                 <a-button
@@ -101,6 +108,15 @@
                     删除
                   </a-button>
                 </a-popconfirm>
+              </a-space>
+              <a-space>
+                <a-button
+                  type="text"
+                  size="small"
+                  @click="handleClickToken(record)"
+                >
+                  查看账号
+                </a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -242,17 +258,7 @@
                 >
               </a-select>
             </a-form-item>
-            <a-form-item
-              v-if="editModel.type != 3"
-              field="status"
-              label="状态"
-              :rules="[
-                {
-                  required: true,
-                  message: '请选择状态',
-                },
-              ]"
-            >
+            <a-form-item v-if="editModel.type != 3" field="" label="头像">
               <a-upload
                 :file-list="fileList"
                 :limit="1"
@@ -285,6 +291,7 @@
     insertUser,
     updateUser,
     deleteUser,
+    getToken,
   } from '@/api/settings';
   import { getMenu } from '@/api/user';
 
@@ -474,6 +481,7 @@
       resolve(true);
     });
   };
+
   const protraitUpload = async (option: any) => {
     const { fileItem } = option;
     const param = new FormData();
@@ -497,7 +505,13 @@
     pagination.pageSize = size;
     search();
   };
-
+  const handleClickToken = async (row: any) => {
+    const { data } = await getToken({ kfId: row.kfId });
+    window.open(
+      `http://localhost:5173/pc/login/?auth_code=${data.token}`,
+      '_blank'
+    );
+  };
   const refresh = () => {
     formModel.value = generateFormModel();
   };

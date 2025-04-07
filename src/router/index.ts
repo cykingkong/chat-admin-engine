@@ -36,7 +36,7 @@ const router = createRouter({
     return { top: 0 };
   },
 });
-console.log(router, 'router');
+
 createRouteGuard(router);
 
 export default router;

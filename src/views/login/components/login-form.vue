@@ -1,13 +1,8 @@
 <template>
   <div class="login-form-wrapper">
     <!-- <div class="logo">
-      <img
-        alt="logo"
-        width="200"
-        src="https://img.adyinqing.com/upai_shop/fjvmgr3e1689565267429"
-      />
+      
 
-  <div class="logo-text">魔力智投</div>
     </div>  -->
     <div class="login-form-title">
       <div class="titleFlexBox">
@@ -99,27 +94,6 @@
         >
           {{ $t('login.form.login') }}
         </a-button>
-        <!-- <a-button
-          type="text"
-          long
-          class="login-form-register-btn fontColorClass"
-          @click="resetEditForm()"
-        >
-          忘记密码
-        </a-button> -->
-        <!-- <a-button
-          type="text"
-          long
-          class="login-form-register-btn"
-          @click="
-            loginActive = 1;
-            buttonText2 = '密码登录';
-            loginType = 2;
-            loginText = '登录';
-          "
-        >
-          验证码登录
-        </a-button> -->
       </a-space>
     </a-form>
 
@@ -137,8 +111,6 @@
         :validate-trigger="['change', 'blur']"
         hide-asterisk
       >
-        <!-- <template #label> <div class="formLabel">手机号 </div> </template> -->
-
         <a-input
           v-model="logonForm.phone"
           placeholder="请输入手机号码"
@@ -164,13 +136,7 @@
           class="upai_input"
           @change="checkPwd('logon')"
         >
-          <template v-if="pwdIconShow" #append>
-            <img
-              src="https://img.adyinqing.com/upai_shop/scg3q0ze1689586526702"
-              alt=""
-              class="icon"
-            />
-          </template>
+          <template v-if="pwdIconShow" #append> </template>
         </a-input>
         <!--  -search :button-text="sendCodeTips"
           search-button
@@ -192,17 +158,7 @@
           class="upai_input"
           @change="checkPassword('logon')"
         >
-          <template v-if="iconShow" #append>
-            <img
-              :src="
-                passIcon
-                  ? 'https://img.adyinqing.com/upai_shop/scg3q0ze1689586526702'
-                  : 'https://img.adyinqing.com/upai_shop/zkiyezcb1689646895146'
-              "
-              alt=""
-              class="icon"
-            />
-          </template>
+          <template v-if="iconShow" #append> </template>
         </a-input>
         <!--  -search :button-text="sendCodeTips"
           search-button
@@ -365,13 +321,7 @@
           class="upai_input"
           @change="checkPwd('edit')"
         >
-          <template v-if="pwdEditIconShow" #append>
-            <img
-              src="https://img.adyinqing.com/upai_shop/scg3q0ze1689586526702"
-              alt=""
-              class="icon"
-            />
-          </template>
+          <template v-if="pwdEditIconShow" #append> </template>
         </a-input>
         <!--  -search :button-text="sendCodeTips"
           search-button
@@ -390,17 +340,7 @@
           class="upai_input"
           @change="checkPassword('edit')"
         >
-          <template v-if="iconEditShow" #append>
-            <img
-              :src="
-                passEditIcon
-                  ? 'https://img.adyinqing.com/upai_shop/scg3q0ze1689586526702'
-                  : 'https://img.adyinqing.com/upai_shop/zkiyezcb1689646895146'
-              "
-              alt=""
-              class="icon"
-            />
-          </template>
+          <template v-if="iconEditShow" #append> </template>
         </a-input>
         <!--  -search :button-text="sendCodeTips"
           search-button
@@ -516,22 +456,7 @@
       a == null || a == '' || a == 'undefined' ? '' : a
     );
   }
-  // function GetQuery(e: any) {
-  //   // eslint-disable-next-line no-shadow
-  //   let t: any = new RegExp(`(^|&)${e}=([^&]*)(&|$)`, 'i');
-  //   console.log(t);
-  //   let n = window.location.search.substr(1).match(t);
-  //   let a = '';
-  //   // eslint-disable-next-line no-return-assign
-  //   return (
-  //     n !== null && (a = decodeURIComponent(n[2])),
-  //     (t = null),
-  //     (n = null),
-  //     a == null || a === '' || a === 'undefined' ? '' : a
-  //   );
-  // }
-  console.log(GetQuery('auth_code'));
-  console.log(GetQuery('auth_key'));
+
   watch(loginType, (newValue: any, oldValue: any) => {
     console.log(loginType.value);
     if (loginType.value <= 2) {

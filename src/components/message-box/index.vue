@@ -147,7 +147,7 @@
   async function changePane() {
     initPage.value = 1;
     reqModel.value.pageIndex = 1;
-    fetchSourceData();
+    // fetchSourceData();
   }
   async function readMessage(data: any) {
     const ids = data.map((item: any) => item.id);
@@ -228,9 +228,9 @@
   };
   const handelFetchNextPage = () => {
     reqModel.value.pageIndex += 1;
-    fetchSourceData();
+    // fetchSourceData();
   };
-  fetchSourceData();
+  // fetchSourceData();
 </script>
 
 <style scoped lang="less">

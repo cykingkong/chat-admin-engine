@@ -10,8 +10,12 @@ function setupPageGuard(router: Router) {
   });
 }
 
+// 导出一个默认函数 createRouteGuard，该函数接收一个 Router 类型的参数 router
 export default function createRouteGuard(router: Router) {
+  // 调用 setupPageGuard 函数，传入 router 参数，设置页面级别的路由守卫
   setupPageGuard(router);
+  // 调用 setupUserLoginInfoGuard 函数，传入 router 参数，设置用户登录信息级别的路由守卫
   setupUserLoginInfoGuard(router);
+  // 调用 setupPermissionGuard 函数，传入 router 参数，设置权限级别的路由守卫
   setupPermissionGuard(router);
 }
