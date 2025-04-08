@@ -34,19 +34,19 @@
         @page-change="onPageChange"
       >
         <template #columns>
-          <a-table-column title="账户昵称" align="center">
+          <a-table-column title="账户昵称" align="center" :width="120">
             <template #cell="{ record }">
               <!-- <a-link href="javascript:void(0)" @click="userDetail(record)"> -->
               {{ record.nickname || 0 }}
               <!-- </a-link> -->
             </template>
           </a-table-column>
-          <a-table-column title="登录账号" :align="'center'">
+          <a-table-column title="登录账号" :align="'center'" :width="120">
             <template #cell="{ record }">
               {{ record.account || '-' }}
             </template>
           </a-table-column>
-          <a-table-column title="手机号" :align="'center'">
+          <a-table-column title="手机号" :align="'center'" :width="120">
             <template #cell="{ record }">
               {{ record.phone || '-' }}
             </template>
@@ -56,18 +56,22 @@
               {{ record.email || '-' }}
             </template>
           </a-table-column>
-
-          <a-table-column title="状态" :align="'center'">
+          <a-table-column title="绑定谷歌" :align="'center'" :width="120">
+            <template #cell="{ record }">
+              {{ record.totpKey ? '已绑定' : '未绑定' }}
+            </template>
+          </a-table-column>
+          <a-table-column title="状态" :align="'center'" :width="100">
             <template #cell="{ record }">
               {{ record.status == 1 ? '启用' : '禁用' }}
             </template>
           </a-table-column>
-          <a-table-column title="登陆ip" align="center">
+          <a-table-column title="登陆ip" align="center" :width="120">
             <template #cell="{ record }">
               {{ record.loginIpAddress || '-' }}
             </template>
           </a-table-column>
-          <a-table-column title="创建时间" align="center">
+          <a-table-column title="创建时间" align="center" :width="120">
             <template #cell="{ record }">
               {{
                 record.createdAt
@@ -81,33 +85,57 @@
               {{ record.memberUserRemark || '-' }}
             </template>
           </a-table-column> -->
-          <a-table-column title="操作" data-index="operations" align="center">
+          <a-table-column
+            title="操作"
+            data-index="operations"
+            fixed="right"
+            align="center"
+            :width="220"
+          >
             <template #cell="{ record }">
-              <a-space>
-                <a-button
-                  type="text"
-                  size="small"
-                  @click="handleClick(2, record)"
-                >
-                  编辑
-                </a-button>
-                <a-button
-                  type="text"
-                  size="small"
-                  @click="handleClickUserKfConfig(record)"
-                >
-                  客服配置
-                </a-button>
-
-                <a-popconfirm
-                  content="确认是否删除此商户账号"
-                  ok-text="确认"
-                  @ok="handleClickDel(record)"
-                >
-                  <a-button type="text" status="danger" size="small">
-                    删除
+              <a-space direction="vertical">
+                <a-space>
+                  <a-button
+                    type="text"
+                    size="small"
+                    @click="handleClick(2, record)"
+                  >
+                    编辑
                   </a-button>
-                </a-popconfirm>
+
+                  <a-popconfirm
+                    content="确认是否删除此商户账号"
+                    ok-text="确认"
+                    @ok="handleClickDel(record)"
+                  >
+                    <a-button type="text" status="danger" size="small">
+                      删除
+                    </a-button>
+                  </a-popconfirm>
+                </a-space>
+                <a-space>
+                  <a-button
+                    type="text"
+                    size="small"
+                    @click="handleClickUserKfConfig(record)"
+                  >
+                    客服配置
+                  </a-button>
+                  <a-button
+                    type="text"
+                    size="small"
+                    @click="handleClickUserAuth(record)"
+                  >
+                    获取谷歌验证码
+                  </a-button>
+                  <a-button
+                    type="text"
+                    size="small"
+                    @click="handleClickUserConfig(record)"
+                  >
+                    欢迎语配置
+                  </a-button>
+                </a-space>
               </a-space>
             </template>
           </a-table-column>
@@ -131,6 +159,41 @@
         /></div>
       </div>
     </a-card>
+    <!-- 欢迎语配置 -->
+    <a-modal
+      v-model:visible="userFormVisible"
+      :title="'配置欢迎语'"
+      width="500px"
+      @cancel="userFormVisible = false"
+      @before-ok="handleBeforeUserOk"
+    >
+      <a-form
+        ref="userformRef"
+        style="margin: 0 auto; width: 400px"
+        :model="userConfigModel"
+        :label-col-props="{ span: 6 }"
+        :wrapper-col-props="{ span: 18 }"
+      >
+        <a-form-item
+          field="greeting"
+          label="欢迎语"
+          class="align-center"
+          :rules="[
+            {
+              required: true,
+              message: '请填写欢迎语',
+            },
+          ]"
+        >
+          <a-input
+            v-model="userConfigModel.greeting"
+            allow-clear
+            placeholder="请填写欢迎语"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+
     <a-modal
       v-model:visible="userKfFormVisible"
       :title="userKfFormTitle"
@@ -200,21 +263,21 @@
         <a-form-item
           v-if="editModel.type != 3"
           field="nickname"
-          label="用户昵称"
+          label="商户昵称"
           :rules="[
             {
               required: true,
-              message: '请填写用户昵称',
+              message: '请填写商户昵称',
             },
           ]"
         >
           <a-input
             v-model="editModel.nickname"
             allow-clear
-            placeholder="请填写用户昵称"
+            placeholder="请填写商户昵称"
           />
         </a-form-item>
-        <a-form-item
+        <!-- <a-form-item
           v-if="editModel.type != 3"
           field="account"
           label="登录账号"
@@ -230,7 +293,7 @@
             allow-clear
             placeholder="请填写登录账号"
           />
-        </a-form-item>
+        </a-form-item> -->
         <a-form-item
           v-if="editModel.type != 3"
           field="password"
@@ -303,11 +366,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, reactive } from 'vue';
+  import { h, ref, reactive } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
   import { Pagination } from '@/types/global';
-  import { Message } from '@arco-design/web-vue';
+  import { Message, Modal } from '@arco-design/web-vue';
+
   import dayjs from 'dayjs';
   import { FormInstance } from '@arco-design/web-vue/es/form';
   import { uploadFile } from '@/api/tool';
@@ -319,8 +383,10 @@
     updateUser,
     userDel,
     updateUserKfConfigInfo,
+    updateUserConfigInfo,
+    userConfigInfo,
   } from '@/api/settings';
-
+  import { getUserAuth } from '@/api/user';
   import _ from 'lodash';
 
   const userStatusList = ref<any[]>([
@@ -330,7 +396,12 @@
   const checkedKeys = ref<any>([]);
   const fileList = ref<any[]>([]);
   const userKfFormVisible = ref(false);
+  const userFormVisible = ref(false);
   const userKfFormTitle = ref('');
+  const userConfigModel = ref({
+    greeting: '',
+    userId: undefined,
+  });
   const userKfConfigModel = ref({
     maxKfCount: undefined,
     maxChannelCount: undefined,
@@ -452,6 +523,36 @@
       type: 1,
     };
   };
+  const handleClickUserAuth = async (row: any) => {
+    const { data, code } = await getUserAuth({ userId: row.userId });
+    if (code === 200) {
+      const imgNode = h('img', {
+        src: data.url,
+        style: {
+          width: '200px',
+          height: '200px',
+        },
+      }); // 创建img节点
+      const contentNode = h(
+        'div',
+        {
+          style: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '200px',
+          },
+        },
+        [imgNode]
+      ); // 将img节点插入到div节点中
+      Modal.info({
+        title: '谷歌二次验证二维码',
+        content: () => contentNode,
+        okText: '我已绑定成功',
+        maskClosable: false,
+      });
+    }
+  };
   const editModel = ref(editFormModel());
   const handleClickUserKfConfig = async (row: any) => {
     const { data } = await userKfConfigInfo({ userId: row.userId });
@@ -463,6 +564,14 @@
     };
     userKfFormTitle.value = '修改商户账号配置';
     userKfFormVisible.value = true;
+  };
+  const handleClickUserConfig = async (row: any) => {
+    const { data } = await userConfigInfo({ userId: row.userId });
+    userConfigModel.value = {
+      greeting: data.greeting,
+      userId: row.userId,
+    };
+    userFormVisible.value = true;
   };
   const handleClick = (type: number, row?: any) => {
     if (type === 2) {
@@ -500,6 +609,7 @@
     formVisible.value = true;
   };
   const userKfformRef = ref<FormInstance>();
+  const userformRef = ref<FormInstance>();
   const formRef = ref<FormInstance>();
   const handleBeforeOk = async (done: any) => {
     const res = await formRef.value?.validate();
@@ -532,6 +642,17 @@
       search();
     }
 
+    window.setTimeout(() => {
+      done();
+    }, 300);
+  };
+  const handleBeforeUserOk = async (done: any) => {
+    const res = await userformRef.value?.validate();
+    if (res) {
+      done(false);
+      return;
+    }
+    const { data } = await updateUserConfigInfo(userConfigModel.value);
     window.setTimeout(() => {
       done();
     }, 300);

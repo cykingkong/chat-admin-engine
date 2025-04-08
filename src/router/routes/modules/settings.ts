@@ -18,7 +18,7 @@ export default {
       meta: {
         locale: '客服账号管理',
         requiresAuth: true,
-        roles: ['superAdmin'],
+        roles: ['superAdmin', 'kfAdmin'],
       },
     },
     {
@@ -31,6 +31,7 @@ export default {
         roles: ['superAdmin'],
       },
     },
+
     // {
     //   path: 'roleList',
     //   name: 'roleList',

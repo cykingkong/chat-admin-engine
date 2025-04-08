@@ -72,11 +72,6 @@
               }}
             </template>
           </a-table-column>
-          <!-- <a-table-column title="备注" align="center">
-            <template #cell="{ record }">
-              {{ record.memberUserRemark || '-' }}
-            </template>
-          </a-table-column> -->
           <a-table-column
             title="操作"
             data-index="operations"
@@ -126,7 +121,6 @@
         class="pagination"
         style="display: flex; justify-content: space-between; margin-top: 15px"
       >
-        <div></div>
         <div>
           <a-pagination
             v-model:current="pagination.page"

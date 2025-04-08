@@ -11,46 +11,49 @@
         @page-change="onPageChange"
       >
         <template #columns>
-          <a-table-column title="用户信息" align="center">
+          <a-table-column title="用户信息" align="center" :width="140">
             <template #cell="{ record }">
-              <a-space horizontal="vertical">
-                <a-avatar
-                  v-if="record.userAvatar"
-                  :image-url="record.userAvatar"
-                >
+              <a-space direction="vertical">
+                <a-avatar v-if="record.avatar" :image-url="record.avatar">
                 </a-avatar>
-                {{ record.userNickname || 0 }}
+                <a-typography-text>
+                  {{ record.nickname || 0 }}
+                </a-typography-text>
+
+                <a-typography-text type="secondary">
+                  {{ record.userAgentDesc }}
+                </a-typography-text>
               </a-space>
             </template>
           </a-table-column>
-          <a-table-column title="备注" :align="'center'">
+          <a-table-column title="备注" :align="'center'" :width="140">
             <template #cell="{ record }">
               {{ record.remark || '-' }}
             </template>
           </a-table-column>
-          <a-table-column title="在线状态" :align="'center'">
+          <a-table-column title="在线状态" :align="'center'" :width="100">
             <template #cell="{ record }">
               {{ record.onlineStatus == 1 ? '在线' : '离线' }}
             </template>
           </a-table-column>
-          <a-table-column title="状态" :align="'center'">
+          <a-table-column title="状态" :align="'center'" :width="100">
             <template #cell="{ record }">
               {{ record.status ? statusEnum[record.status] : '-' }}
             </template>
           </a-table-column>
-          <a-table-column title="渠道信息" align="center">
+          <a-table-column title="渠道信息" align="center" :width="100">
             <template #cell="{ record }">
               {{
                 (record.channelInfo && record.channelInfo.channelName) || '-'
               }}
             </template>
           </a-table-column>
-          <a-table-column title="登陆IP" align="center">
+          <a-table-column title="登陆IP" align="center" :width="140">
             <template #cell="{ record }">
               {{ record.loginIpAddress }}
             </template>
           </a-table-column>
-          <a-table-column title="创建时间" align="center">
+          <a-table-column title="创建时间" align="center" :width="180">
             <template #cell="{ record }">
               {{
                 record.createdAt
@@ -59,7 +62,7 @@
               }}
             </template>
           </a-table-column>
-          <a-table-column title="登陆时间" align="center">
+          <a-table-column title="登陆时间" align="center" :width="180">
             <template #cell="{ record }">
               {{
                 record.loginTime
@@ -186,9 +189,11 @@
   import dayjs from 'dayjs';
   import { FormInstance } from '@arco-design/web-vue/es/form';
   import { uploadFile } from '@/api/tool';
-  import { updateUser } from '@/api/settings';
-  import { userChannelAdd } from '@/api/channel';
-  import { userConsultGrid, userConsultDel } from '@/api/userList';
+  import {
+    userConsultGrid,
+    userConsultDel,
+    userConsultUpdate,
+  } from '@/api/userList';
 
   import _ from 'lodash';
 
@@ -199,8 +204,8 @@
   };
   const userStatusList = ref<any[]>([
     { value: 1, label: '正常' },
-    { value: 1, label: '删除' },
-    { value: 1, label: '拉黑' },
+    { value: 2, label: '删除' },
+    { value: 3, label: '拉黑' },
   ]);
   const checkedKeys = ref<any>([]);
   const fileList = ref<any[]>([]);
@@ -230,6 +235,7 @@
       const { data, code } = await userConsultGrid(params);
       if (code === 200) {
         renderData.value = data.rows ? data.rows : [];
+        console.log(renderData.value, 'renderData.value');
         pagination.current = params.pageIndex;
         pagination.pageIndex = params.pageIndex;
         pagination.total = data.total;
@@ -300,36 +306,29 @@
   };
   const formVisible = ref(false);
   const formTitle = ref('新增客服帐号');
+
+  const dataRoleText = ref('请先选择用户角色');
+
   const editFormModel = () => {
     return {
       remark: '',
-
+      consultId: '',
       status: 1,
       type: 1,
+      avatar: '',
     };
   };
+
   const editModel = ref(editFormModel());
 
   const handleClick = (type: number, row?: any) => {
     if (type === 2) {
-      formTitle.value = '编辑客服账号信息';
-      editModel.value.account = row.account;
-      editModel.value.kfId = row.kfId;
-      editModel.value.nickname = row.nickname;
-      editModel.value.maxConnections = row.maxConnections;
+      formTitle.value = '编辑客户账号信息';
+      editModel.value.remark = row.remark;
       editModel.value.status = row.status;
-      editModel.value.password = '';
-      editModel.value.avatar = row.avatar;
+      editModel.value.consultId = row.consultId;
+
       editModel.value.type = 2;
-      if (row.avatar) {
-        fileList.value = [
-          {
-            uid: row.userId,
-            name: row.avatar,
-            url: row.avatar,
-          },
-        ];
-      }
     } else if (type === 3) {
       formTitle.value = '修改客服账号密码';
 
@@ -353,23 +352,9 @@
       return;
     }
 
-    if (editModel.value.type === 1) {
-      const { data } = await userChannelAdd(editModel.value);
-      Message.success({
-        content: '添加成功',
-        duration: 5 * 1000,
-      });
-      search();
-    } else if (editModel.value.type === 3) {
-      // const { data } = await updateUser(editModel.value);
-      // Message.success({
-      //   content: '修改成功',
-      //   duration: 5 * 1000,
-      // });
-      // search();
-    } else {
+    if (editModel.value.type === 2) {
       // delete editModel.value.memberDepId;
-      const { data } = await updateUser(editModel.value);
+      const { data } = await userConsultUpdate(editModel.value);
       Message.success({
         content: '修改成功',
         duration: 5 * 1000,
@@ -381,17 +366,7 @@
       done();
     }, 300);
   };
-  const handleClickChangeStatus = async (row: any) => {
-    const { data } = await updateUser({
-      memberUserId: row.memberUserId,
-      memberStatus: 0,
-    });
-    Message.success({
-      content: '停用该账号成功',
-      duration: 5 * 1000,
-    });
-    search();
-  };
+
   const handleClickDel = async (row: any) => {
     const { data } = await userConsultDel({
       kfId: row.kfId,
@@ -407,29 +382,8 @@
   };
 </script>
 
-<script lang="ts">
-  export default {
-    name: 'SearchTable',
-  };
-</script>
-
 <style scoped lang="less">
   .container {
     padding: 0 20px 20px 20px;
-  }
-  :deep(.arco-table-th) {
-    &:last-child {
-      .arco-table-th-item-title {
-        margin-left: 16px;
-      }
-    }
-  }
-  .treeMark {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 9;
   }
 </style>

@@ -61,6 +61,14 @@ export function userKfConfigInfo(params: any) {
     },
   });
 }
+export function userConfigInfo(params: any) {
+  return axios.get<any>('ztapi/user/userConfigInfo', {
+    params,
+    paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
 export function userAdd(data: any) {
   return axios.post<any>('ztapi/user/userAdd', data);
 }
@@ -75,6 +83,9 @@ export function userUpdate(data: any) {
 }
 export function updateUserKfConfigInfo(data: any) {
   return axios.post<any>('ztapi/user/userKfConfigUpdate', data);
+}
+export function updateUserConfigInfo(data: any) {
+  return axios.post<any>('ztapi/user/userConfigUpdate', data);
 }
 // 部门管理
 export function getDepment(params: any) {

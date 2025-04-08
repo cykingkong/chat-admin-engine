@@ -69,3 +69,9 @@ export function memberMsg(params: any) {
     },
   });
 }
+
+// 获取二次验证码
+
+export function getUserAuth(data: any) {
+  return axios.post<any>('ztapi/user/userAuth', data);
+}

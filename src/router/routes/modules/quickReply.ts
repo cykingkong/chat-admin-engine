@@ -18,8 +18,18 @@ export default {
       meta: {
         locale: '快捷回复列表',
         requiresAuth: true,
-        roles: ['superAdmin', 'kfAdmin'],
+        roles: ['superAdmin'],
       },
     },
+    // {
+    //   path: '/kfquickReply',
+    //   name: 'kfquickReply',
+    //   component: () => import('@/views/kfQuickReply/list.vue'),
+    //   meta: {
+    //     locale: '快捷回复列表',
+    //     requiresAuth: true,
+    //     roles: ['kfAdmin'],
+    //   },
+    // },
   ],
 };

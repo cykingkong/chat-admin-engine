@@ -1,15 +1,11 @@
 <template>
   <div class="container">
-    <!-- <Particles id="tsparticles" class="login__particles" :options="particles" /> -->
-
     <Particles
       id="tsparticles"
       :particles-init="particlesInit"
       :particles-loaded="particlesLoaded"
       :options="particles"
     />
-
-    <!-- <LoginBanner /> -->
     <div class="content">
       <div class="content-inner">
         <LoginForm />

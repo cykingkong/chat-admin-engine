@@ -21,7 +21,6 @@
     <!-- <div class="login-form-sub-title">{{ $t('login.form.title') }}</div> -->
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
-      v-if="loginType === 1"
       ref="loginForm"
       :model="userInfo"
       class="login-form"
@@ -37,7 +36,7 @@
         <!-- <template #label> <div class="formLabel"> 账号 </div> </template> -->
         <a-input
           v-model="userInfo.username"
-          placeholder="请输入账号"
+          placeholder="请输入账号123123"
           class="upai_input"
         >
           <!-- <template #prefix>
@@ -59,10 +58,23 @@
           allow-clear
           class="upai_input"
         >
-          <!-- <template #prefix>
-            <icon-lock />
-          </template> -->
         </a-input-password>
+      </a-form-item>
+      <a-form-item
+        v-if="loginType == 2"
+        field="code"
+        :validate-trigger="['change', 'blur']"
+        hide-asterisk
+      >
+        <!-- <template #label> <div class="formLabel">密码 </div> </template> -->
+
+        <a-input
+          v-model="userInfo.code"
+          placeholder="请输入商户二次验证码"
+          allow-clear
+          class="upai_input"
+        >
+        </a-input>
       </a-form-item>
       <a-space :size="16" direction="vertical">
         <div class="login-form-password-actions">
@@ -75,15 +87,6 @@
               {{ $t('login.form.rememberPassword') }}</span
             >
           </a-checkbox>
-          <!-- <a-link
-            style="color: #0c2963"
-            @click="
-              loginType = 3;
-              buttonText = '注册';
-              loginActive = 0;
-            "
-            >注册账号</a-link
-          > -->
         </div>
         <a-button
           type="primary"
@@ -93,279 +96,6 @@
           class="loginBtn"
         >
           {{ $t('login.form.login') }}
-        </a-button>
-      </a-space>
-    </a-form>
-
-    <a-form
-      v-if="loginType >= 2 && loginType != 4"
-      ref="loginForm"
-      :model="logonForm"
-      class="login-form"
-      layout="vertical"
-      @submit="handleSubmit"
-    >
-      <a-form-item
-        field="phone"
-        :rules="[{ required: true, message: '请输入手机号码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-asterisk
-      >
-        <a-input
-          v-model="logonForm.phone"
-          placeholder="请输入手机号码"
-          class="upai_input"
-        />
-        <!--  -search :button-text="sendCodeTips"
-          search-button
-          :loading="disable"
-          @search="sendMessage" -->
-      </a-form-item>
-      <a-form-item
-        v-if="loginType === 3"
-        field="pwd"
-        :rules="[{ required: false, message: '请输入密码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-asterisk
-      >
-        <!-- <template #label> <div class="formLabel">密码 </div> </template> -->
-
-        <a-input
-          v-model="logonForm.memberPassword"
-          placeholder="请输入密码"
-          class="upai_input"
-          @change="checkPwd('logon')"
-        >
-          <template v-if="pwdIconShow" #append> </template>
-        </a-input>
-        <!--  -search :button-text="sendCodeTips"
-          search-button
-          :loading="disable"
-          @search="sendMessage" -->
-      </a-form-item>
-      <a-form-item
-        v-if="loginType === 3"
-        field="pwdagn"
-        :rules="[{ required: false, message: '请输入密码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-asterisk
-      >
-        <!-- <template #label> <div class="formLabel">确认密码 </div> </template> -->
-
-        <a-input
-          v-model="logonForm.memberPasswordCheck"
-          placeholder="请再次输入密码"
-          class="upai_input"
-          @change="checkPassword('logon')"
-        >
-          <template v-if="iconShow" #append> </template>
-        </a-input>
-        <!--  -search :button-text="sendCodeTips"
-          search-button
-          :loading="disable"
-          @search="sendMessage" -->
-      </a-form-item>
-      <!-- <a-form-item
-        field="imgCode"
-        :rules="[{ required: true, message: '请输入图形验证码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-label
-        ><a-space :size="5">
-          <a-input
-            v-model="logonForm.imgCode"
-            :style="{ width: '200px' }"
-            placeholder="请输入图形验证码"
-          />
-          <div
-            class="imgBox"
-            style="
-              width: 115px;
-              height: 34px;
-              border-radius: 2px;
-              background-color: #fff;
-            "
-            @click="getImgCodeUrl"
-          >
-            <img
-              v-if="codeImgUrl"
-              :src="codeImgUrl"
-              alt="图片验证码"
-              style="width: 115px; height: 34px; border-radius: 2px"
-            />
-          </div>
-        </a-space>
-      </a-form-item> -->
-
-      <a-form-item
-        field="verificationCode"
-        :rules="[{ required: true, message: '请输入正确验证码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-asterisk
-      >
-        <!-- <template #label> <div class="formLabel">验证码 </div> </template> -->
-
-        <a-input-search
-          v-model="logonForm.verificationCode"
-          :button-text="sendCodeTips"
-          search-button
-          :loading="disable"
-          placeholder="请输入验证码"
-          allow-clear
-          class="upai_input"
-          @search="sendMessage"
-        >
-        </a-input-search>
-      </a-form-item>
-      <a-form-item v-if="validateVisible" field="" hide-label>
-        <validate @success="SetToken"></validate>
-      </a-form-item>
-      <a-space :size="16" direction="vertical">
-        <div class="login-form-password-actions">
-          <div class=""></div>
-          <!-- <a-link
-            v-if="loginType === 2"
-            style="color: #0c2963"
-            @click="
-              loginType = 3;
-              buttonText = '注册';
-              loginActive = 0;
-            "
-            >注册账号</a-link
-          > -->
-        </div>
-        <a-button
-          type="primary"
-          html-type="submit"
-          long
-          :loading="loading"
-          class="loginBtn"
-        >
-          {{ buttonText }}
-        </a-button>
-        <a-button
-          v-if="loginType === 3"
-          type="text"
-          long
-          class="login-form-register-btn"
-          @click="
-            loginType = 1;
-            loginActive = 0;
-          "
-        >
-          {{ buttonText2 }}
-        </a-button>
-      </a-space>
-    </a-form>
-    <a-form
-      v-if="loginType === 4"
-      ref="editForm"
-      :model="editForm"
-      class="login-form"
-      layout="vertical"
-      @submit="handleSubmitEdit"
-    >
-      <a-form-item
-        field="phone"
-        :rules="[{ required: true, message: '请输入手机号码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-asterisk
-      >
-        <!-- <template #label> <div class="formLabel">手机号 </div> </template> -->
-
-        <a-input
-          v-model="editForm.phone"
-          placeholder="请输入手机号码"
-          class="upai_input"
-        />
-        <!--  -search :button-text="sendCodeTips"
-          search-button
-          :loading="disable"
-          @search="sendMessage" -->
-      </a-form-item>
-
-      <a-form-item
-        field="verificationCode"
-        :rules="[{ required: true, message: '请输入正确验证码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-asterisk
-      >
-        <!-- <template #label> <div class="formLabel">验证码 </div> </template> -->
-
-        <a-input-search
-          v-model="editForm.verificationCode"
-          :button-text="sendCodeTips"
-          search-button
-          :loading="disable"
-          placeholder="请输入验证码"
-          allow-clear
-          class="upai_input"
-          @search="sendEditMessage"
-        >
-        </a-input-search>
-      </a-form-item>
-      <a-form-item v-if="validateVisible" field="" hide-label>
-        <validate @success="SetToken"></validate>
-      </a-form-item>
-
-      <a-form-item
-        field="pwd"
-        :rules="[{ required: false, message: '请输入密码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-asterisk
-      >
-        <!-- <template #label> <div class="formLabel">密码 </div> </template> -->
-
-        <a-input
-          v-model="editForm.memberPassword"
-          placeholder="请输入密码"
-          class="upai_input"
-          @change="checkPwd('edit')"
-        >
-          <template v-if="pwdEditIconShow" #append> </template>
-        </a-input>
-        <!--  -search :button-text="sendCodeTips"
-          search-button
-          :loading="disable"
-          @search="sendMessage" -->
-      </a-form-item>
-      <a-form-item
-        field="pwdagn"
-        :rules="[{ required: false, message: '请输入密码' }]"
-        :validate-trigger="['change', 'blur']"
-        hide-asterisk
-      >
-        <a-input
-          v-model="editForm.memberPasswordCheck"
-          placeholder="请再次输入密码"
-          class="upai_input"
-          @change="checkPassword('edit')"
-        >
-          <template v-if="iconEditShow" #append> </template>
-        </a-input>
-        <!--  -search :button-text="sendCodeTips"
-          search-button
-          :loading="disable"
-          @search="sendMessage" -->
-      </a-form-item>
-
-      <a-space :size="16" direction="vertical">
-        <a-button
-          type="primary"
-          html-type="submit"
-          long
-          :loading="loading"
-          class="loginBtn"
-        >
-          {{ buttonText }}
-        </a-button>
-        <a-button
-          v-if="loginType === 4"
-          type="text"
-          long
-          class="login-form-register-btn fontColorClass"
-          @click="toLogin"
-        >
-          前往登录
         </a-button>
       </a-space>
     </a-form>
@@ -381,7 +111,7 @@
   import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
-  import { LoginData, login, smsLogin, sendSms } from '@/api/user';
+  import { LoginData, login, smsLogin, sendSms, getUserAuth } from '@/api/user';
   import { getCaptcha, resetPassword } from '@/api/member';
   import { setToken } from '@/utils/auth';
   import Validate from './NC.vue';
@@ -398,7 +128,7 @@
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
-  const loginTitleList = ref(['密码登录']);
+  const loginTitleList = ref(['密码登录', '商户登陆']);
   const loginType = ref(1);
   const loginText = ref('登录');
   const buttonText = ref('注册');
@@ -457,16 +187,6 @@
     );
   }
 
-  watch(loginType, (newValue: any, oldValue: any) => {
-    console.log(loginType.value);
-    if (loginType.value <= 2) {
-      loginTitleList.value = ['密码登录', '验证码登录'];
-    } else if (loginType.value === 3) {
-      loginTitleList.value = ['注册'];
-    } else if (loginType.value === 4) {
-      loginTitleList.value = ['忘记密码'];
-    }
-  });
   const toLogin = () => {
     loginType.value = 1;
     loginActive.value = 0;
@@ -666,7 +386,7 @@
 
   const getImgCodeUrl = async () => {
     getImgCode.value = '刷新图片验证码';
-    const { data } = await getCaptcha();
+    const { data } = await getUserAuth({ userId: 0 });
     console.log(data);
     codeImgUrl.value = data.data;
     logonForm.codeId = data.id;
@@ -707,7 +427,7 @@
     if (!errors) {
       setLoading(true);
       try {
-        if (loginType.value === 1) {
+        if (loginType.value === 1 || loginType.value === 2) {
           await userStore.login(values as LoginData);
 
           const { rememberPassword } = loginConfig.value;
@@ -716,45 +436,15 @@
           // The actual production environment requires encrypted storage.
           loginConfig.value.username = rememberPassword ? username : '';
           loginConfig.value.password = rememberPassword ? password : '';
-        } else {
-          if (!passIcon.value) {
-            Message.error('请确认两次密码无误');
-
-            return;
-          }
-          const req = {
-            tel: logonForm.phone,
-            code: logonForm.verificationCode,
-            memberPassword: logonForm.memberPassword,
-          };
-          if (GetQuery('auth_key')) {
-            req.shareCode = GetQuery('auth_key');
-          }
-          if (GetQuery('channelCustom')) {
-            req.channelCustom = GetQuery('channelCustom');
-          }
-          if (GetQuery('channel')) {
-            req.channel = GetQuery('channel');
-          }
-          // 官网
-          if (GetQuery('public_channel')) {
-            req.publicChannel = GetQuery('public_channel');
-          }
-          // 百度
-          if (GetQuery('bd_vid')) {
-            req.bdVid = GetQuery('bd_vid');
-          }
-          console.log(req, GetQuery('public_channel'));
-          console.log(req, 'req', GetQuery('channel'));
-
-          const { data } = await smsLogin(req);
-          await setToken(data.token);
         }
 
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        console.log(router);
+
         router.push({
-          name: (redirect as string) || 'adminList',
+          name:
+            (redirect as string) || loginType.value === 1
+              ? 'adminList'
+              : 'quickReply',
           query: {
             ...othersQuery,
           },

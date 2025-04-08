@@ -113,7 +113,7 @@ axios.interceptors.response.use(
           },
         });
       }
-      console.log('45d45f', res);
+
       return Promise.reject(new Error(res.message ? res.message : 'Error'));
     }
     return res;

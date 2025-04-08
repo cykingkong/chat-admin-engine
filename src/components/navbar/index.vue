@@ -19,67 +19,6 @@
       <Menu v-if="topMenu" ref="menuleft" class="guideMenu" />
     </div>
     <ul class="right-side">
-      <!-- <li>
-        <a-tooltip :content="$t('settings.title')">
-          <a-button
-            class="nav-btn"
-            type="outline"
-            :shape="'circle'"
-            @click="setVisible"
-          >
-            <template #icon>
-              <icon-settings />
-            </template>
-          </a-button>
-        </a-tooltip>
-      </li> -->
-      <!-- <li>
-        <a-dropdown trigger="click">
-          <div style="text-align: center">
-            <a-space direction="vertical" fill :size="[0, 0]">
-              <div>
-                <a-avatar
-                  :size="32"
-                  :style="{ marginRight: '8px', cursor: 'pointer' }"
-                >
-                 
-                </a-avatar>
-                <span>{{
-                  userStore.$state.userInfo.memberDepId
-                    ? userStore.$state.userInfo.memberNickname
-                    : userStore.$state.memberNickname
-                }}</span>
-              </div>
-            </a-space>
-          </div>
-          <template #content>
-            <a-doption>
-              <a-space @click="$router.push({ name: 'userInfo' })">
-                <icon-user />
-                <span>
-                  {{ $t('messageBox.userCenter') }}
-                </span>
-              </a-space>
-            </a-doption>
-
-            <a-doption>
-              <a-space @click="handleShareLink">
-                <icon-link />
-                <span> 邀请链接 </span>
-              </a-space>
-            </a-doption>
-            <a-doption>
-              <a-space @click="handleLogout">
-                <icon-export />
-                <span>
-                  {{ $t('messageBox.logout') }}
-                </span>
-              </a-space>
-            </a-doption>
-          </template>
-        </a-dropdown>
-      </li> -->
-
       <li>
         <a-popover
           position="br"
@@ -97,7 +36,9 @@
                 >
                   <icon-user />
                 </a-avatar>
-                <span> {{ userNickname }} </span>
+                <a-typography-text type="secondary">
+                  <span> {{ userNickname }} </span>
+                </a-typography-text>
               </div>
             </a-space>
           </div>
@@ -114,26 +55,8 @@
                   <div class="rightValue">
                     {{ userNickname }}
                   </div>
-                  <!-- <div class="tag">
-                    {{
-                      userStore.$state.userInfo.memberDepId
-                        ? '子账号'
-                        : '主账号'
-                    }}
-                  </div> -->
                 </div>
-                <!-- <div class="userInfo">
-                  <div class="label"> 手机号: </div>
-                  <div class="rightValue">
-                    {{ userStore.$state.memberPhone }}
-                  </div>
-                </div>
-                <div class="userInfo">
-                  <div class="label"> 账号有效期: </div>
-                  <div class="rightValue">
-                    {{ userStore.$state.memberExpiredAt }}
-                  </div>
-                </div> -->
+
                 <div class="logoutBtn" @click="handleLogout">
                   <icon-export />
                   退出登录
@@ -229,22 +152,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, inject, onMounted, nextTick } from 'vue';
-  import { Message, Notification } from '@arco-design/web-vue';
+  import { computed, ref, inject } from 'vue';
+  import { Message } from '@arco-design/web-vue';
   import { useDark, useToggle, useFullscreen } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
   import { LOCALE_OPTIONS } from '@/locale';
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
-  import { memberMsg } from '@/api/user';
   import { useRoute, useRouter } from 'vue-router';
   import { uploadFile } from '@/api/tool';
   import { memberEdit } from '@/api/settings';
-  import MessageBox from '../message-box/index.vue';
 
-  const guideShow = ref('hidden');
-  const show = ref(false);
   const route = useRoute();
   const iconShow = ref<boolean>(true);
   const kfShow = ref<boolean>(true);
@@ -267,7 +186,6 @@
   const { logout } = useUser();
   const { changeLocale, currentLocale } = useLocale();
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
-  const locales = [...LOCALE_OPTIONS];
 
   const hideIcon = (type: any) => {
     if (type === 'hide') {
@@ -288,10 +206,6 @@
     localStorage.setItem('msgTotal', '0');
   }
 
-  const msgTotal = ref(0);
-  const theme = computed(() => {
-    return appStore.theme;
-  });
   const topMenu = computed(() => appStore.topMenu && appStore.menu);
   const isDark = useDark({
     selector: 'body',
@@ -304,38 +218,13 @@
       appStore.toggleTheme(dark);
     },
   });
-  const gotoBook = (item: any) => {
-    // router.push({
-    //   name: item.name,
-    // });
-    window.open('https://docs.qq.com/doc/DSmhzUXBJb0hHUnVt');
-  };
   const toggleTheme = useToggle(isDark);
-  const handleToggleTheme = () => {
-    toggleTheme();
-  };
-  const setVisible = () => {
-    appStore.updateSettings({ globalSettings: true });
-  };
 
   const formRef = ref<any>();
   const refBtn = ref();
   const triggerBtn = ref();
-  const setPopoverVisible = () => {
-    const event = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    });
-    refBtn.value.dispatchEvent(event);
-  };
   const handleLogout = () => {
     logout();
-  };
-  const goHome = () => {
-    router.push({
-      name: 'adminList',
-    });
   };
   const handleBeforeOk = async (done: any) => {
     const res = await formRef.value?.validate();
@@ -355,11 +244,6 @@
     window.setTimeout(() => {
       done();
     }, 300);
-  };
-  const handleShareLink = () => {
-    router.push({
-      name: 'shareLink',
-    });
   };
   const handleToUserInfo = () => {
     editModel.value = {
@@ -403,28 +287,11 @@
       resolve(true);
     });
   };
-  const setDropDownVisible = () => {
-    const event = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    });
-    triggerBtn.value.dispatchEvent(event);
-  };
-  const switchRoles = async () => {
-    const res = await userStore.switchRoles();
-    Message.success(res as string);
-  };
   const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 
   if (route.name !== 'datav') {
     // fetchMsgData();
   }
-  const jumpDataV = () => {
-    // router.push({ name: 'datav', target: '_blank' });
-    window.open('/#/datav', '_blank');
-    // window.open('/#/pos', '_blank');
-  };
 </script>
 
 <style scoped lang="less">
@@ -587,7 +454,7 @@
         align-items: center;
         justify-content: space-between;
         font-size: 16px;
-        color: #000;
+        // color: #000;
         font-weight: 500;
         padding: 12px 24px 7px;
         cursor: pointer;
