@@ -36,7 +36,7 @@
         <!-- <template #label> <div class="formLabel"> 账号 </div> </template> -->
         <a-input
           v-model="userInfo.username"
-          placeholder="请输入账号123123"
+          placeholder="请输入账号"
           class="upai_input"
         >
           <!-- <template #prefix>
@@ -160,6 +160,7 @@
   const userInfo = reactive({
     username: loginConfig.value.username,
     password: loginConfig.value.password,
+    code: null,
   });
   const resetEditForm = () => {
     loginType.value = 4;
@@ -193,6 +194,9 @@
     console.log(editForm, 'toLogin');
   };
   const loginTypeChange = (k: any) => {
+    userInfo.password = null;
+    userInfo.username = null;
+    userInfo.code = null;
     if (loginType.value <= 2) {
       loginActive.value = k;
       loginType.value = k ? 2 : 1;

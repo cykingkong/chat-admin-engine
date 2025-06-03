@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'query-string';
 
-function getChatLog(params: any) {
+export function getChatLog(params: any) {
   return axios.get<any>('ztapi/kfuser/chatLog', {
     params,
     paramsSerializer: (obj) => {
@@ -9,4 +9,11 @@ function getChatLog(params: any) {
     },
   });
 }
-export default getChatLog;
+export function chatUser(params: any) {
+  return axios.get<any>('ztapi/kfuser/chatUser', {
+    params,
+    paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}

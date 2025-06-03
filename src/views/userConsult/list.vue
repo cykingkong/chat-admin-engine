@@ -17,7 +17,7 @@
                 <a-avatar v-if="record.avatar" :image-url="record.avatar">
                 </a-avatar>
                 <a-typography-text>
-                  {{ record.nickname || 0 }}
+                  {{ record.nickname }}
                 </a-typography-text>
 
                 <a-typography-text type="secondary">
@@ -50,7 +50,14 @@
           </a-table-column>
           <a-table-column title="登陆IP" align="center" :width="140">
             <template #cell="{ record }">
-              {{ record.loginIpAddress }}
+              <a-space direction="vertical">
+                <a-typography-text>
+                  {{ record.loginIpAddress }}
+                </a-typography-text>
+                <a-typography-text type="secondary">
+                  【{{ record.ipLocation }}】
+                </a-typography-text>
+              </a-space>
             </template>
           </a-table-column>
           <a-table-column title="创建时间" align="center" :width="180">

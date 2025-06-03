@@ -5,9 +5,9 @@ export default {
   name: 'shUser',
   component: DEFAULT_LAYOUT,
   meta: {
-    locale: '个人信息',
+    locale: '欢迎语管理',
     requiresAuth: true,
-    icon: 'icon-share-alt',
+    icon: 'icon-idcard',
     order: 6,
   },
   children: [
@@ -16,7 +16,7 @@ export default {
       name: 'shUserInfo',
       component: () => import('@/views/shUserInfo/index.vue'),
       meta: {
-        locale: '个人信息',
+        locale: '欢迎语管理',
         requiresAuth: true,
         roles: ['kfAdmin'],
       },

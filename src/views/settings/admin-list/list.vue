@@ -87,13 +87,7 @@
                 >
                   编辑
                 </a-button>
-                <!-- <a-button
-                  type="text"
-                  size="small"
-                  @click="handleClickChangeStatus(record)"
-                >
-                  停用
-                </a-button> -->
+
                 <a-popconfirm
                   content="确认是否删除此客服账号"
                   ok-text="确认"
@@ -111,6 +105,14 @@
                   @click="handleClickToken(record)"
                 >
                   查看账号
+                </a-button>
+                <a-button
+                  type="text"
+                  size="small"
+                  :loading="record.copyBtnLoading"
+                  @click="handleClickCopyLink(record)"
+                >
+                  复制链接
                 </a-button>
               </a-space>
             </template>
@@ -132,10 +134,51 @@
             :page-size-options="[10, 20, 50, 100, 200]"
             @change="onPageChange"
             @page-size-change="pageSizeChange"
-        /></div>
+          />
+        </div>
       </div>
     </a-card>
 
+    <a-modal
+      v-model:visible="channelVisible"
+      title="选择渠道"
+      width="500px"
+      :ok-text="'复制链接'"
+      @cancel="channelVisible = false"
+      @before-ok="handleBeforeCopy"
+    >
+      <a-form
+        ref="channelFormRef"
+        style="margin: 0 auto; width: 400px"
+        :model="channelModel"
+        :label-col-props="{ span: 6 }"
+        :wrapper-col-props="{ span: 18 }"
+      >
+        <a-form-item
+          field="channelKey"
+          label="渠道"
+          :rules="[
+            {
+              required: true,
+              message: '请选择渠道',
+            },
+          ]"
+        >
+          <a-select
+            v-model="channelModel.channelKey"
+            allow-clear
+            placeholder="请选择渠道"
+          >
+            <a-option
+              v-for="(el, key) in channelList"
+              :key="key"
+              :value="el.channelKey"
+              >{{ el.channelName }}</a-option
+            >
+          </a-select>
+        </a-form-item>
+      </a-form>
+    </a-modal>
     <a-modal
       v-model:visible="formVisible"
       :title="formTitle"
@@ -273,7 +316,8 @@
   import { computed, ref, reactive } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import { Pagination } from '@/types/global';
+  import { useClipboard } from '@vueuse/core';
+
   import { Message } from '@arco-design/web-vue';
   import dayjs from 'dayjs';
   import { FormInstance } from '@arco-design/web-vue/es/form';
@@ -287,7 +331,7 @@
     deleteUser,
     getToken,
   } from '@/api/settings';
-  import { getMenu } from '@/api/user';
+  import { userChannelGrid } from '@/api/channel';
 
   import { clearAllChildren, getAllMenuIds } from '@/utils/event';
   import { userStatus } from '@/utils/enum';
@@ -299,44 +343,15 @@
     { value: 0, label: '禁用' },
     { value: 1, label: '启用' },
   ]);
+  const { copy } = useClipboard();
   const checkedKeys = ref<any>([]);
   const fileList = ref([]);
-  const treeData = ref<any>([]);
-  const getMenuData = async (params: any) => {
-    try {
-      const { data } = await getMenu(params);
-      // data.forEach((key: any, el: any) => {});
-      if (data.grid) {
-        const clearBeforeData = clearAllChildren(data.grid);
-        const arr: any = clearBeforeData.map((e: any) => {
-          const obj = {
-            menuName: e.menuName,
-            menuId: e.menuId,
-            children: e.children || [],
-            icon: e.menuIcon || '',
-          };
-          return obj;
-        });
-        // 特殊处理  不让选中部门管理 将部门管理MenuI
-        // eslint-disable-next-line array-callback-return
-        treeData.value = arr.map((item: any) => {
-          if (item.children.length > 0 && item.menuId === 32) {
-            // eslint-disable-next-line array-callback-return, consistent-return
-            // item.children =  item.children.filter((e: any) => e.menuId !== 34);
-            const filteredChildren = item.children.filter(
-              (e: any) => e.menuId !== 34
-            );
-            item.children = filteredChildren;
-          }
-          return item;
-        });
-      }
-    } catch (err) {
-      console.log(err);
-      // you can report use errorHandler or other
-    }
-  };
-
+  const channelVisible = ref(false);
+  const channelList = ref<any>([]);
+  const channelModel = ref({
+    channelKey: '',
+    sessionId: '',
+  });
   // const getDictionaryList = async () => {
   // };
 
@@ -355,59 +370,10 @@
   const generateFormModel = () => {
     return {};
   };
-  const clearDep = () => {
-    delete formModel.value.memberDepId;
-  };
   const { loading, setLoading } = useLoading(true);
   const { t } = useI18n();
-  const roleList = ref<any[]>([]);
   const dataRoleText = ref('请先选择用户角色');
 
-  const roleArr = ref<any>([
-    { value: 0, label: '所有' },
-    { value: 1, label: '本部门及以下数据权限 ' },
-    { value: 2, label: '本部门数据权限' },
-    { value: 3, label: '仅本人数据权限' },
-  ]);
-
-  const roleIdChange = (event: any) => {
-    console.log(event);
-    if (event) {
-      const dataRole = _.find(roleList.value, ['roleId', event]).roleData;
-      dataRoleText.value = roleArr.value[dataRole].label;
-      listMethods
-        .getMeunDataByRole({
-          roleId: event,
-        })
-        .then((res: any) => {
-          checkedKeys.value = getAllMenuIds(res.grid);
-        });
-    } else {
-      dataRoleText.value = '请先选择用户角色';
-      checkedKeys.value = [];
-    }
-  };
-  const depmentArr = ref([]);
-  const flatArr = (arr: any) => {
-    const ar = arr.map((item: any) => item.children).flat();
-    console.log(arr);
-
-    return ar;
-  };
-  const getDepArr = async (params: { page: 1; pageSize: 20 }) => {
-    setLoading(true);
-    try {
-      const { data } = await getDepment(params);
-      depmentArr.value = clearAllChildren(data.grid);
-      console.log(flatArr(depmentArr.value));
-      // pagination.current = params.page;
-    } catch (err) {
-      // console.log(err);
-      // you can report use errorHandler or other
-    } finally {
-      setLoading(false);
-    }
-  };
   // getDepArr({ page: 1, pageSize: 20 });
   const renderData = ref<any[]>([]);
   const formModel = ref(generateFormModel());
@@ -434,7 +400,13 @@
     try {
       const { data, code } = await getUserPage(params);
       if (code === 200) {
-        renderData.value = data.rows || [];
+        renderData.value =
+          data.rows.map((e: any) => {
+            return {
+              ...e,
+              copyBtnLoading: false,
+            };
+          }) || [];
         pagination.current = params.page;
         pagination.page = params.page;
         pagination.total = data.total;
@@ -500,14 +472,42 @@
     search();
   };
   const handleClickToken = async (row: any) => {
+    const url = import.meta.env.VITE_PC_CHAT_URL;
     const { data } = await getToken({ kfId: row.kfId });
-    window.open(
-      `http://localhost:5173/pc/login/?auth_code=${data.token}`,
-      '_blank'
-    );
+    window.open(`${url}/pc/login/?auth_code=${data.token}`, '_blank');
   };
-  const refresh = () => {
-    formModel.value = generateFormModel();
+  const handleClickCopyLink = async (row: any) => {
+    row.copyBtnLoading = true;
+    channelModel.value.channelKey = '';
+
+    const { data, code } = await userChannelGrid({
+      pageIndex: 1,
+      page_size: 200,
+    });
+    if (code === 200) {
+      channelList.value = data.rows ? data.rows : [];
+      channelModel.value.sessionId = row.sessionId;
+    }
+    channelVisible.value = true;
+    row.copyBtnLoading = false;
+  };
+  const handleBeforeCopy = async (done: any) => {
+    const res = await channelFormRef.value?.validate();
+    if (res) {
+      done(false);
+      return;
+    }
+    const url = import.meta.env.VITE_M_CHAT_URL;
+    const str = `${url}/m/?sessionId=${channelModel.value.sessionId}&channel=${channelModel.value.channelKey}`;
+    copy(str);
+    Message.success({
+      content: '复制成功',
+      duration: 5 * 1000,
+    });
+    done(true);
+    setTimeout(() => {
+      channelVisible.value = false;
+    }, 300);
   };
   const formVisible = ref(false);
   const formTitle = ref('新增客服帐号');
@@ -560,6 +560,7 @@
   };
 
   const formRef = ref<FormInstance>();
+  const channelFormRef = ref<FormInstance>();
   const handleBeforeOk = async (done: any) => {
     const res = await formRef.value?.validate();
     if (res) {
@@ -596,17 +597,6 @@
     window.setTimeout(() => {
       done();
     }, 300);
-  };
-  const handleClickChangeStatus = async (row: any) => {
-    const { data } = await updateUser({
-      memberUserId: row.memberUserId,
-      memberStatus: 0,
-    });
-    Message.success({
-      content: '停用该账号成功',
-      duration: 5 * 1000,
-    });
-    search();
   };
   const handleClickDel = async (row: any) => {
     const { data } = await deleteUser({

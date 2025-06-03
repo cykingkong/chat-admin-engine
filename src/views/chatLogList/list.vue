@@ -1,241 +1,88 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['聊天记录列表']" />
     <a-row>
-      <a-card class="general-card-upai" style="width: 100%">
-        <a-col :flex="1">
-          <a-form :model="formModel" auto-label-width label-align="left">
-            <a-row :gutter="16">
-              <a-col :span="8">
-                <a-form-item
-                  field="channel"
-                  label="用户渠道"
-                  label-col-flex="60px"
-                >
-                  <a-input v-model="formModel.channel" allow-clear></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="user-uuid"
-                  label="用户"
-                  label-col-flex="60px"
-                >
-                  <a-select
-                    v-model="formModel.levelId"
-                    allow-clear
-                    placeholder="请选择用户"
-                  >
-                    <a-option
-                      v-for="(item, key) in levelList"
-                      :key="key"
-                      :label="item.levelName"
-                      :value="item.levelId"
-                    />
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="kfId" label="客服ID" label-col-flex="60px">
-                  <a-select
-                    v-model="formModel.kfId"
-                    allow-clear
-                    placeholder="请选择客服"
-                  >
-                    <a-option
-                      v-for="(item, key) in kfList"
-                      :key="key"
-                      :label="item.nickname"
-                      :value="item.kfId"
-                    />
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="number" :hide-label="true">
-                  <a-space :size="18">
-                    <a-button type="primary" class="searchBtn" @click="search">
-                      筛选
-                    </a-button>
-                    <a-button
-                      type="outline"
-                      class="refreshBtn"
-                      @click="search()"
-                    >
-                      刷新
-                    </a-button>
-                    <a-typography-text type="primary">
-                      <a-link href="javascript:void(0)" @click="refresh()"
-                        >重置筛选条件</a-link
-                      >
-                    </a-typography-text>
-                  </a-space>
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form>
-        </a-col>
-      </a-card>
-    </a-row>
-
-    <a-card class="general-card" title="聊天记录列表">
-      <a-row style="margin-bottom: 16px">
-        <a-col :span="16">
-          <a-space>
-            <a-button type="primary" @click="handleClick(1)">
-              <template #icon>
-                <icon-plus />
+      <a-col :span="6">
+        <a-card title="客服列表">
+          <div class="user-list">
+            <a-table
+              :show-header="false"
+              :hoverable="true"
+              :data="cacheKfList"
+              :loading="tableKfLoading"
+              :row-class="rowKfClassName"
+              @cell-click="cellKfClick"
+              @page-change="handleClickKfPageChange"
+            >
+              <template #columns>
+                <a-table-column title="" :align="'center'">
+                  <template #cell="{ record }">
+                    {{ record.nickname }}
+                  </template>
+                </a-table-column>
               </template>
-              新建商户
-            </a-button>
-          </a-space>
-        </a-col>
-        <a-col :span="8" style="text-align: right">
-          <!-- <a-button type="primary" style="margin-right: 13px">
-            <template #icon> <icon-menu-unfold /> </template>
-            自定义列
-          </a-button> -->
-          <!-- <TableFluter ref="tableFluter" /> -->
-          <a-button type="primary" @click="search()">
-            <template #icon> <icon-refresh /> </template>
-            刷新
-          </a-button>
-        </a-col>
-      </a-row>
-      <a-table
-        row-key="id"
-        :loading="loading"
-        :pagination="false"
-        :data="renderData"
-        :bordered="false"
-        @page-change="onPageChange"
-      >
-        <template #columns>
-          <a-table-column title="用户信息" align="center">
-            <template #cell="{ record }">
-              <a-space direction="vertical">
-                <a-avatar
-                  v-if="record.userAvatar"
-                  :image-url="record.userAvatar"
-                >
-                </a-avatar>
-                {{ record.userNickname || 0 }}
-              </a-space>
-              <!-- <a-link href="javascript:void(0)" @click="userDetail(record)"> -->
-              <!-- </a-link> -->
-            </template>
-          </a-table-column>
-          <a-table-column title="用户渠道" :align="'center'" :width="120">
-            <template #cell="{ record }">
-              <a-typography-paragraph
-                :ellipsis="{
-                  rows: 2,
-                  showTooltip: true,
-                }"
-                class="margin-0"
-              >
-                {{ record.userChannel || '-' }}
-              </a-typography-paragraph>
-            </template>
-          </a-table-column>
-          <a-table-column title="消息内容" :align="'center'" :width="120">
-            <template #cell="{ record }">
-              <a-typography-paragraph
-                :ellipsis="{
-                  rows: 2,
-                  showTooltip: true,
-                }"
-                class="margin-0"
-              >
-                <div v-html="record.msg"></div>
-              </a-typography-paragraph>
-            </template>
-          </a-table-column>
-          <a-table-column title="email" :align="'center'">
-            <template #cell="{ record }">
-              {{ record.email || '-' }}
-            </template>
-          </a-table-column>
+            </a-table>
+          </div>
+        </a-card>
+      </a-col>
+      <a-col v-if="formModel.kfId" :span="6">
+        <a-card title="用户列表">
+          <div class="user-list">
+            <a-table
+              :show-header="false"
+              :hoverable="true"
+              :loading="tableLoading"
+              :data="userList"
+              :pagination="{
+                pageSize: 20,
+              }"
+              :row-class="rowClassName"
+              @cell-click="cellClick"
+              @page-change="handleClickUserPageChange"
+            >
+              <template #columns>
+                <a-table-column title="" :align="'center'">
+                  <template #cell="{ record }">
+                    {{ record.nickname }}
+                  </template>
+                </a-table-column>
+              </template>
+            </a-table>
+          </div>
+        </a-card>
+      </a-col>
 
-          <a-table-column title="状态" :align="'center'">
-            <template #cell="{ record }">
-              {{ record.status == 1 ? '启用' : '禁用' }}
-            </template>
-          </a-table-column>
-          <a-table-column title="登陆ip" align="center">
-            <template #cell="{ record }">
-              {{ record.loginIpAddress || '-' }}
-            </template>
-          </a-table-column>
-          <a-table-column title="创建时间" align="center">
-            <template #cell="{ record }">
-              {{
-                record.createdAt
-                  ? dayjs(record.createdAt).format('YYYY-MM-DD HH:mm:ss')
-                  : '-'
-              }}
-            </template>
-          </a-table-column>
-          <!-- <a-table-column title="备注" align="center">
-            <template #cell="{ record }">
-              {{ record.memberUserRemark || '-' }}
-            </template>
-          </a-table-column> -->
-          <a-table-column title="操作" data-index="operations" align="center">
-            <template #cell="{ record }">
-              <a-space>
-                <a-button
-                  type="text"
-                  size="small"
-                  @click="handleClick(2, record)"
-                >
-                  编辑
-                </a-button>
-                <a-button
-                  type="text"
-                  size="small"
-                  @click="handleClickUserKfConfig(record)"
-                >
-                  客服配置
-                </a-button>
+      <a-col v-if="msgVisible" :span="12">
+        <a-card title="对话消息">
+          <div ref="userChatLogListRef" class="user-chat-log-list">
+            <div
+              v-for="(item, index) in renderData"
+              :key="index"
+              class="msg-item"
+              :class="item.chatType === 1 ? 'msg-item-right' : 'msg-item-left'"
+            >
+              <div class="update-time w100">{{ item.createdAt }}</div>
+              <a-avatar class="avatar">
+                {{ item.chatType == 1 ? '客服' : '用户' }}
+              </a-avatar>
+              <a-space direction="vertical" :size="14">
+                <a-typography-text type="secound">
+                  {{ item.chatType == 1 ? item.kfNickname : item.userNickname }}
+                </a-typography-text>
 
-                <a-popconfirm
-                  content="确认是否删除此商户账号"
-                  ok-text="确认"
-                  @ok="handleClickDel(record)"
-                >
-                  <a-button type="text" status="danger" size="small">
-                    删除
-                  </a-button>
-                </a-popconfirm>
+                <a-typography-text class="msg-content" v-html="`${item.msg}`">
+                </a-typography-text>
               </a-space>
-            </template>
-          </a-table-column>
-        </template>
-      </a-table>
-      <div
-        class="pagination"
-        style="display: flex; justify-content: space-between; margin-top: 15px"
-      >
-        <div></div>
-        <div>
-          <a-pagination
-            v-model:current="pagination.page"
-            v-model:page-size="pagination.pageSize"
-            :total="pagination.total"
-            :show-total="true"
-            :show-page-size="true"
-            :page-size-options="[10, 20, 50, 100, 200]"
-            @change="onPageChange"
-            @page-size-change="pageSizeChange"
-        /></div>
-      </div>
-    </a-card>
+            </div>
+            <a-empty v-if="renderData && renderData.length === 0" />
+          </div>
+        </a-card>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, reactive } from 'vue';
+  import { computed, ref, reactive, onMounted } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
   import { Pagination } from '@/types/global';
@@ -253,9 +100,14 @@
     updateUserKfConfigInfo,
   } from '@/api/settings';
   import { userConsultGrid } from '@/api/userList';
-  import getChatLog from '@/api/chatLog';
+  import { getChatLog, chatUser } from '@/api/chatLog';
   import _ from 'lodash';
 
+  const tableLoading = ref(false);
+  const tableKfLoading = ref(false);
+  const activeRowClass = (record: any) => {
+    return record.userId === selectedRow.value ? 'activeRowLight' : '';
+  };
   const userStatusList = ref<any[]>([
     { value: 0, label: '禁用' },
     { value: 1, label: '启用' },
@@ -291,20 +143,65 @@
     { value: 2, label: '本部门数据权限' },
     { value: 3, label: '仅本人数据权限' },
   ]);
-
+  const msgVisible = ref(false);
+  const userChatLogListRef = ref();
   const renderData = ref<any[]>([]);
   const formModel = ref(generateFormModel());
-
+  const cacheKfList = ref<any[]>([]);
   const basePagination: any = {
     current: 1,
     page: 1,
-    pageSize: 20,
+    pageSize: 200,
   };
   const pagination = reactive({
     ...basePagination,
   });
-  const fetchListData = async () => {
-    const { data, code } = await getUserPage({ page: 1, page_size: 200 });
+  const kfpagination = reactive({
+    ...basePagination,
+  });
+  const userpagination = reactive({
+    ...basePagination,
+  });
+  const selectedRow = ref<any>('');
+
+  const cellClick = async (row: any) => {
+    if (loading.value) {
+      return;
+    }
+    kfList.value = [];
+    selectedRow.value = row.userUuid ? row.userUuid : null;
+    formModel.value['user-uuid'] = row.userUuid;
+
+    await fetchData({
+      ...basePagination,
+      ...formModel.value,
+    } as unknown as any);
+  };
+  const cellKfClick = async (row: any) => {
+    renderData.value = [];
+    formModel.value.kfId = row.kfId;
+    userpagination.page = 1;
+    fetchUserList({ ...userpagination, kfId: formModel.value.kfId });
+  };
+  const handleClickKfPageChange = (page: number) => {
+    kfpagination.current = page;
+    kfpagination.page = page;
+    fetchListData({ ...kfpagination, kfId: formModel.value.kfId });
+  };
+  const handleClickUserPageChange = (page: number) => {
+    userpagination.current = page;
+    userpagination.page = page;
+    fetchUserList({ ...userpagination, kfId: formModel.value.kfId });
+  };
+  const rowKfClassName = (record: any) => {
+    return record.kfId === formModel.value.kfId ? 'selected-row' : '';
+  };
+  const rowClassName = (record: any) => {
+    return record.userUuid === selectedRow.value ? 'selected-row' : '';
+  };
+  // 获取客服列表
+  const fetchListData = async (params: { page: 1; page_size: 20 }) => {
+    const { data, code } = await getUserPage(params);
     if (code === 200) {
       kfList.value =
         data.rows.map((item: any) => {
@@ -313,34 +210,80 @@
             kfId: item.kfId,
           };
         }) || [];
+      cacheKfList.value = data.rows ? data.rows : [];
     }
-    const userRes = await userConsultGrid({ pageIndex: 1, pageSize: 200 });
-    if (userRes.code === 200) {
-      userList.value = userRes.data.rows
-        ? userRes.data.rows.map((e: any) => {
+    // try {
+    //   tableLoading.value = true;
+    //   const userRes = await userConsultGrid({ pageIndex: 1, pageSize: 200 });
+    //   if (userRes.code === 200) {
+    //     userList.value = userRes.data.rows
+    //       ? userRes.data.rows.map((e: any) => {
+    //           return {
+    //             nickname: `${e.nickname}${e.remark ? `(${e.remark})` : ''} `,
+    //             uuid: e.uuid,
+    //             userId: e.userId,
+    //             consultId: e.consultId,
+    //           };
+    //         })
+    //       : [];
+    //   }
+    //   tableLoading.value = false;
+    // } catch (e) {
+    //   console.log(e);
+    // }
+  };
+  // 获取客服接待的用户数
+  const fetchUserList = async (params: { page: 1; page_size: 20 }) => {
+    try {
+      tableLoading.value = true;
+      const { data, code } = await chatUser(params);
+      userList.value = data.rows
+        ? data.rows.map((e: any) => {
             return {
-              nickname: `${e.nickname}(${e.remark}) `,
+              nickname: `${e.userNickname}${
+                e.userConsultInfo && e.userConsultInfo.remark
+                  ? `(${e.userConsultInfo.remark})`
+                  : ''
+              } `,
               uuid: e.uuid,
               userId: e.userId,
+              userUuid: e.userUuid,
             };
           })
         : [];
+      tableLoading.value = false;
+    } catch (e) {
+      console.log(e);
     }
   };
+  // 获取消息列表
   const fetchData = async (params: { page: 1; page_size: 20 }) => {
+    msgVisible.value = false;
     setLoading(true);
     try {
       const { data, code } = await getChatLog(params);
       if (code === 200) {
-        renderData.value = data.rows || [];
+        renderData.value = data.rows ? data.rows.reverse() : [];
         pagination.current = params.page;
         pagination.page = params.page;
         pagination.total = data.total;
       } else {
         renderData.value = [];
       }
+      if (formModel.value.kfId) {
+        msgVisible.value = true;
+
+        setTimeout(() => {
+          console.log(userChatLogListRef.value, 'userChatLogListRef');
+          // 判断userChatLogListRef.value是否有滚动条，有的话滚动到最底部
+          if (userChatLogListRef.value) {
+            userChatLogListRef.value.scrollTop =
+              userChatLogListRef.value.scrollHeight;
+          }
+        }, 300);
+      }
     } catch (err) {
-      console.log(err);
+      msgVisible.value = false;
       // you can report use errorHandler or other
     } finally {
       setLoading(false);
@@ -360,12 +303,16 @@
   const search = () => {
     onPageChange(1);
   };
-
-  fetchData({
+  onMounted(() => {
+    setLoading(false);
+  });
+  // fetchData({
+  //   ...basePagination,
+  //   ...formModel.value,
+  // } as unknown as any);
+  fetchListData({
     ...basePagination,
-    ...formModel.value,
-  } as unknown as any);
-  fetchListData();
+  });
   const beforeRemove = () => {
     return new Promise((resolve) => {
       fileList.value = [];
@@ -403,7 +350,19 @@
   };
   const formVisible = ref(false);
   const formTitle = ref('新增商户帐号');
-  const editFormModel = () => {
+  interface EditModelType {
+    userId: string;
+    nickname: string;
+    email: string;
+    account: string;
+    password: string;
+    avatar: string;
+    status: number;
+    type: number;
+    maxConnections?: number;
+  }
+
+  const editFormModel = (): EditModelType => {
     return {
       userId: '',
       nickname: '',
@@ -413,6 +372,7 @@
       avatar: '',
       status: 1,
       type: 1,
+      maxConnections: 0,
     };
   };
   const editModel = ref(editFormModel());
@@ -544,7 +504,63 @@
 
 <style scoped lang="less">
   .container {
-    padding: 0 20px 20px 20px;
+    padding: 20px;
+  }
+  .user-list,
+  .user-chat-log-list {
+    width: 100%;
+    height: 80vh;
+    overflow-y: auto;
+  }
+  .user-chat-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .msg-item {
+    padding: 10px;
+    // border-bottom: 1px solid #ccc;
+    // background: #fff;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+    width: 100%;
+    padding-top: 20px;
+    // border-radius: 5px;
+    // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    .update-time {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 20px;
+      width: 100%;
+      text-align: center;
+      color: var(--color-neutral-6);
+    }
+    .avatar {
+      width: 30px;
+      height: 30px;
+    }
+    .msg-content {
+      background: #fff;
+      border-radius: 5px;
+      padding: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .msg-item-left {
+    align-self: flex-start;
+  }
+  .msg-item-right {
+    align-self: flex-end;
+    text-align: right;
+    flex-direction: row-reverse;
+  }
+  :deep(.selected-row > .arco-table-td) {
+    background-color: #8ba1fb !important;
+    color: #fff;
   }
   :deep(.arco-table-th) {
     &:last-child {
@@ -553,6 +569,7 @@
       }
     }
   }
+
   .treeMark {
     width: 100%;
     height: 100%;
@@ -566,5 +583,8 @@
   }
   .margin-0 {
     margin: 0;
+  }
+  .arco-typography {
+    display: block;
   }
 </style>

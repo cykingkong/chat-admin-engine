@@ -18,7 +18,7 @@ export default {
       meta: {
         locale: '渠道管理',
         requiresAuth: true,
-        roles: ['superAdmin'],
+        roles: ['superAdmin', 'kfAdmin'],
       },
     },
   ],

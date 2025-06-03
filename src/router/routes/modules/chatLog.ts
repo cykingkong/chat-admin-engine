@@ -18,7 +18,7 @@ export default {
       meta: {
         locale: '聊天记录列表',
         requiresAuth: true,
-        roles: ['superAdmin'],
+        roles: ['superAdmin', 'kfAdmin'],
       },
     },
   ],
