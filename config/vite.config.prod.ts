@@ -16,7 +16,7 @@ export default mergeConfig(
       configStyleImportPlugin(),
       configImageminPlugin(),
     ],
-    base: '/service',
+    base: '/',
     build: {
       rollupOptions: {
         output: {
