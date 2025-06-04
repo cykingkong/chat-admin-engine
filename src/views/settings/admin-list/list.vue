@@ -318,7 +318,7 @@
   import useLoading from '@/hooks/loading';
   import { useClipboard } from '@vueuse/core';
 
-  import { Message } from '@arco-design/web-vue';
+  import { Message,Modal } from '@arco-design/web-vue';
   import dayjs from 'dayjs';
   import { FormInstance } from '@arco-design/web-vue/es/form';
   import { uploadFile } from '@/api/tool';
@@ -447,7 +447,7 @@
       resolve(true);
     });
   };
-
+const chatUrl = ref('')
   const protraitUpload = async (option: any) => {
     const { fileItem } = option;
     const param = new FormData();
@@ -474,7 +474,7 @@
   const handleClickToken = async (row: any) => {
     const url = import.meta.env.VITE_PC_CHAT_URL;
     const { data } = await getToken({ kfId: row.kfId });
-    window.open(`${url}/pc/login/?auth_code=${data.token}`, '_blank');
+    window.open(`${url}pc/?auth_code=${data.token}`, '_blank');
   };
   const handleClickCopyLink = async (row: any) => {
     row.copyBtnLoading = true;
@@ -498,7 +498,8 @@
       return;
     }
     const url = import.meta.env.VITE_M_CHAT_URL;
-    const str = `${url}/m/?sessionId=${channelModel.value.sessionId}&channel=${channelModel.value.channelKey}`;
+    const str = `${url}m/?sessionId=${channelModel.value.sessionId}&channel=${channelModel.value.channelKey}`;
+    console.log(str)
     copy(str);
     Message.success({
       content: '复制成功',
@@ -507,6 +508,12 @@
     done(true);
     setTimeout(() => {
       channelVisible.value = false;
+       Modal.info({
+          title: '链接地址',
+          content: str,
+          width:"750px",
+          okText: '确定',
+       })
     }, 300);
   };
   const formVisible = ref(false);
@@ -518,6 +525,7 @@
       password: '',
       avatar: '',
       kfId: undefined,
+      maxConnections:1,
       status: 1,
       type: 1,
     };

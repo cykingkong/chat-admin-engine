@@ -84,7 +84,7 @@
                   停用
                 </a-button> -->
                 <a-popconfirm
-                  content="确认是否删除此客服账号"
+                  content="确认是否删除此渠道"
                   ok-text="确认"
                   @ok="handleClickDel(record)"
                 >
@@ -264,7 +264,7 @@
   };
 
   const formVisible = ref(false);
-  const formTitle = ref('新增客服帐号');
+  const formTitle = ref('新增渠道');
   const editFormModel = () => {
     return {
       channelName: '',
@@ -277,20 +277,20 @@
 
   const handleClick = (type: number, row?: any) => {
     if (type === 2) {
-      formTitle.value = '编辑客服账号信息';
+      formTitle.value = '编辑渠道信息';
       editModel.value.channelName = row.channelName;
       editModel.value.status = row.status;
       editModel.value.id = row.id;
 
       editModel.value.type = 2;
     } else if (type === 3) {
-      formTitle.value = '修改客服账号密码';
+      formTitle.value = '修改渠道密码';
 
       // editModel.value.sysUserId = row.userId;
       // editModel.value.userPassword = '';
       editModel.value.type = 3;
     } else {
-      formTitle.value = '新增客服账号';
+      formTitle.value = '新增渠道';
       editModel.value = editFormModel();
       dataRoleText.value = '请先选择用户角色';
       checkedKeys.value = [];

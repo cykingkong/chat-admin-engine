@@ -277,7 +277,7 @@
             placeholder="请填写商户昵称"
           />
         </a-form-item>
-        <!-- <a-form-item
+        <a-form-item
           v-if="editModel.type != 3"
           field="account"
           label="登录账号"
@@ -293,7 +293,7 @@
             allow-clear
             placeholder="请填写登录账号"
           />
-        </a-form-item> -->
+        </a-form-item>
         <a-form-item
           v-if="editModel.type != 3"
           field="password"
@@ -681,10 +681,10 @@
   };
   const handleClickDel = async (row: any) => {
     const { data } = await userDel({
-      kfId: row.kfId,
+      userId: row.userId,
     });
     Message.success({
-      content: '成功删除客服账号',
+      content: '成功删除商户',
       duration: 5 * 1000,
     });
     search();
