@@ -48,6 +48,12 @@
               {{ record.account || '-' }}
             </template>
           </a-table-column>
+               <a-table-column title="分组信息" align="center">
+            <template #cell="{ record }">
+              <!-- channel -->
+              {{ record.channelName }} 
+            </template>
+          </a-table-column>
           <a-table-column title="最大处理咨询用户数" align="center">
             <template #cell="{ record }">
               {{ record.maxConnections || '-' }}
@@ -220,6 +226,32 @@
             </a-form-item>
             <a-form-item
               v-if="editModel.type != 3"
+              field="channelKey"
+              label="分组"
+              :rules="[
+                {
+                  required: true,
+                  message: '请选择分组',
+                },
+              ]"
+            >
+          
+          <a-select
+            v-model="editModel.channelKey"
+            allow-clear
+            placeholder="请选择分组"
+          >
+            <a-option
+              v-for="(el, key) in channelList"
+              :key="key"
+              :value="el.channelKey"
+              >{{ el.channelName }}</a-option
+            >
+          </a-select>
+          </a-form-item>
+             
+            <a-form-item
+              v-if="editModel.type != 3"
               field="account"
               label="登录账号"
               :rules="[
@@ -313,7 +345,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, reactive } from 'vue';
+  import { computed, ref, reactive, onMounted } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
   import { useClipboard } from '@vueuse/core';
@@ -404,7 +436,8 @@
           data.rows.map((e: any) => {
             return {
               ...e,
-              copyBtnLoading: false,
+              copyBtnLoading: false, 
+              channelName:channelList.value.find((el:any)=>el.channelKey==e.wckIdArr)?.channelName  ||'-'
             };
           }) || [];
         pagination.current = params.page;
@@ -435,10 +468,7 @@
     onPageChange(1);
   };
 
-  fetchData({
-    ...basePagination,
-    ...formModel.value,
-  } as unknown as any);
+
   const beforeRemove = () => {
     return new Promise((resolve) => {
       fileList.value = [];
@@ -474,22 +504,29 @@ const chatUrl = ref('')
   const handleClickToken = async (row: any) => {
     const url = import.meta.env.VITE_PC_CHAT_URL;
     const { data } = await getToken({ kfId: row.kfId });
-    window.open(`${url}pc/?auth_code=${data.token}`, '_blank');
+    window.open(`${url}#/login?auth_code=${data.token}&kfId=${row.kfId}`);
   };
   const handleClickCopyLink = async (row: any) => {
-    row.copyBtnLoading = true;
-    channelModel.value.channelKey = '';
-
-    const { data, code } = await userChannelGrid({
-      pageIndex: 1,
-      page_size: 200,
+     const url = import.meta.env.VITE_M_CHAT_URL;
+    const str = `${url}?sessionId=${row.sessionId}&channel=${row.wckIdArr}`;
+    copy(str);
+ Message.success({
+      content: '复制成功',
+      duration: 5 * 1000,
     });
-    if (code === 200) {
-      channelList.value = data.rows ? data.rows : [];
-      channelModel.value.sessionId = row.sessionId;
-    }
-    channelVisible.value = true;
-    row.copyBtnLoading = false;
+    // row.copyBtnLoading = true;
+    // channelModel.value.channelKey = '';
+
+    // const { data, code } = await userChannelGrid({
+    //   pageIndex: 1,
+    //   page_size: 200,
+    // });
+    // if (code === 200) {
+    //   channelList.value = data.rows ? data.rows : [];
+    //   channelModel.value.sessionId = row.sessionId;
+    // }
+    // channelVisible.value = true;
+    // row.copyBtnLoading = false;
   };
   const handleBeforeCopy = async (done: any) => {
     const res = await channelFormRef.value?.validate();
@@ -498,7 +535,7 @@ const chatUrl = ref('')
       return;
     }
     const url = import.meta.env.VITE_M_CHAT_URL;
-    const str = `${url}m/?sessionId=${channelModel.value.sessionId}&channel=${channelModel.value.channelKey}`;
+    const str = `${url}?sessionId=${channelModel.value.sessionId}&channel=${channelModel.value.channelKey}`;
     console.log(str)
     copy(str);
     Message.success({
@@ -526,6 +563,8 @@ const chatUrl = ref('')
       avatar: '',
       kfId: undefined,
       maxConnections:1,
+      wckIdArr:'',// channelKey
+      channelKey:"",
       status: 1,
       type: 1,
     };
@@ -538,6 +577,8 @@ const chatUrl = ref('')
       editModel.value.account = row.account;
       editModel.value.kfId = row.kfId;
       editModel.value.nickname = row.nickname;
+    editModel.value.channelKey =   editModel.value.wckIdArr = row.channelKey
+
       editModel.value.maxConnections = row.maxConnections;
       editModel.value.status = row.status;
       editModel.value.password = '';
@@ -561,6 +602,9 @@ const chatUrl = ref('')
     } else {
       formTitle.value = '新增客服账号';
       editModel.value = editFormModel();
+      if(channelList.value.length>0){
+         editModel.value.channelKey =   editModel.value.wckIdArr = channelList.value[0].channelKey
+      }
       dataRoleText.value = '请先选择用户角色';
       checkedKeys.value = [];
     }
@@ -578,7 +622,7 @@ const chatUrl = ref('')
 
     if (editModel.value.type === 1) {
       console.log(editModel.value);
-
+      editModel.value.wckIdArr = editModel.value.channelKey
       const { data } = await insertUser(editModel.value);
       Message.success({
         content: '添加成功',
@@ -594,6 +638,8 @@ const chatUrl = ref('')
       // search();
     } else {
       // delete editModel.value.memberDepId;
+      editModel.value.wckIdArr = editModel.value.channelKey
+
       const { data } = await updateUser(editModel.value);
       Message.success({
         content: '修改成功',
@@ -616,6 +662,27 @@ const chatUrl = ref('')
     });
     search();
   };
+  const getChannelList = async()=>{
+     const { data, code } = await userChannelGrid({
+      pageIndex: 1,
+      page_size: 200,
+    });
+    if (code === 200) {
+      channelList.value = data.rows ? data.rows : [];
+
+    }
+  }
+  const init = async () => {
+  await   getChannelList()
+  await   fetchData({
+    ...basePagination,
+    ...formModel.value,
+  } as unknown as any);
+
+  }
+  onMounted(()=>{
+    init()
+  })
   const handleCancel = () => {
     formVisible.value = false;
   };

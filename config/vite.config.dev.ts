@@ -12,6 +12,14 @@ export default mergeConfig(
       },
       port: 7813,
       host: '0.0.0.0',
+       proxy: {
+        '/api': {
+          target:'https://helpapi.getechat.one', // 代理接口
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+          ws: false,
+        },
+      }
     },
 
     plugins: [

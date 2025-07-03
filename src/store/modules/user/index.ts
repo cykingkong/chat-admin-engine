@@ -59,6 +59,8 @@ const useUserStore = defineStore('user', {
       } else {
         res.data.role = 'kfAdmin';
       }
+      this.setInfo(res.data);
+
       // if (res.data.userInfo.memberDepId === 0) {
       //   res.data.role = 'superAdmin';
       //   if (res.data.grayscaleType === 1) {
@@ -77,8 +79,6 @@ const useUserStore = defineStore('user', {
       // }
       // const sysRes = await getSysConfig();
       // res.data.sysConfig = sysRes.data;
-
-      this.setInfo(res.data);
 
       // const oldVersion = import.meta.env.VITE_KB_VERSION;
       // const versionDescArr = res.data.versionDesc.split('\n');

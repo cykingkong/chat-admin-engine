@@ -1,15 +1,19 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['渠道管理']" />
-    <a-card class="general-card" title="渠道管理">
+    <Breadcrumb :items="['分组管理']" />
+    <a-card class="general-card" title="分组管理">
       <a-row style="margin-bottom: 16px">
         <a-col :span="16">
           <a-space>
-            <a-button type="primary" @click="handleClick(1)">
+            <a-button
+              v-if="userStore.isSupper == 1"
+              type="primary"
+              @click="handleClick(1)"
+            >
               <template #icon>
                 <icon-plus />
               </template>
-              新建渠道
+              新建分组
             </a-button>
           </a-space>
         </a-col>
@@ -34,18 +38,18 @@
         @page-change="onPageChange"
       >
         <template #columns>
-          <a-table-column title="渠道名称" :align="'center'">
+          <a-table-column title="分组名称" :align="'center'">
             <template #cell="{ record }">
               {{ record.channelName || '-' }}
             </template>
           </a-table-column>
-          <a-table-column title="渠道key" align="center">
+          <!--      <a-table-column title="渠道key" align="center">
             <template #cell="{ record }">
-              <!-- <a-link href="javascript:void(0)" @click="userDetail(record)"> -->
+            <a-link href="javascript:void(0)" @click="userDetail(record)"> 
               {{ record.channelKey || 0 }}
-              <!-- </a-link> -->
+             - </a-link> 
             </template>
-          </a-table-column>
+          </a-table-column>-->
           <a-table-column title="状态" :align="'center'">
             <template #cell="{ record }">
               {{ record.status == 1 ? '启用' : '禁用' }}
@@ -66,7 +70,7 @@
               {{ record.memberUserRemark || '-' }}
             </template>
           </a-table-column> -->
-          <a-table-column title="操作" data-index="operations" align="center">
+          <!-- <a-table-column title="操作" data-index="operations" align="center">
             <template #cell="{ record }">
               <a-space>
                 <a-button
@@ -76,13 +80,7 @@
                 >
                   编辑
                 </a-button>
-                <!-- <a-button
-                  type="text"
-                  size="small"
-                  @click="handleClickChangeStatus(record)"
-                >
-                  停用
-                </a-button> -->
+
                 <a-popconfirm
                   content="确认是否删除此渠道"
                   ok-text="确认"
@@ -94,7 +92,7 @@
                 </a-popconfirm>
               </a-space>
             </template>
-          </a-table-column>
+          </a-table-column> -->
         </template>
       </a-table>
       <div
@@ -133,18 +131,18 @@
         <a-form-item
           v-if="editModel.type != 3"
           field="channelName"
-          label="渠道名称"
+          label="分组名称"
           :rules="[
             {
               required: true,
-              message: '请填写渠道名称',
+              message: '请填写分组名称',
             },
           ]"
         >
           <a-input
             v-model="editModel.channelName"
             allow-clear
-            placeholder="请填写渠道名称"
+            placeholder="请填写分组名称"
           />
         </a-form-item>
 
@@ -178,7 +176,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive } from 'vue';
+  import { ref, reactive, computed } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
   import { Message } from '@arco-design/web-vue';
@@ -190,8 +188,11 @@
     userChannelUpdate,
     userChannelDel,
   } from '@/api/channel';
+  import { useUserStore } from '@/store';
 
   import _ from 'lodash';
+
+  const userStore = computed(() => useUserStore().$state);
 
   const userStatusList = ref<any[]>([
     { value: 0, label: '禁用' },
@@ -336,10 +337,10 @@
   };
   const handleClickDel = async (row: any) => {
     const { data } = await userChannelDel({
-      kfId: row.kfId,
+      id: row.id,
     });
     Message.success({
-      content: '成功删除该渠道',
+      content: '成功删除该分组',
       duration: 5 * 1000,
     });
     search();

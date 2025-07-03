@@ -4,9 +4,11 @@
       <a-col :span="6">
         <a-card title="客服列表">
           <div class="user-list">
+        
             <a-table
               :show-header="false"
               :hoverable="true"
+              :pagination="false"
               :data="cacheKfList"
               :loading="tableKfLoading"
               :row-class="rowKfClassName"
@@ -22,19 +24,51 @@
               </template>
             </a-table>
           </div>
+                    <div
+        class="pagination"
+        style="display: flex; justify-content: space-between; margin-top: 15px"
+      >
+        <div></div>
+        <div>
+          <a-pagination
+            v-model:current="kfpagination.page"
+            v-model:page-size="kfpagination.pageSize"
+            :total="kfpagination.total || 0"
+            :show-total="true"
+            :show-page-size="true"
+            :page-size-options="[10, 20, 50, 100, 200]"
+            @change="handleClickKfPageChange"
+            @page-size-change="pageSizeChange"
+        /></div>
+      </div>
         </a-card>
+        
       </a-col>
       <a-col v-if="formModel.kfId" :span="6">
         <a-card title="用户列表">
+               <a-space class="mb-20">
+        <a-select
+          :style="{ width: '160px' }"
+          v-model="searchForm.channel"
+          allow-clear
+          placeholder="请选择分组"
+        >
+          <a-option
+            v-for="(el, i) in channelList"
+            :key="i"
+            :value="el.channelKey"
+            >{{ el.channelName }}</a-option
+          >
+        </a-select>
+        <a-button :type="'primary'" class="" @click="searchUser">提交</a-button>
+      </a-space>
           <div class="user-list">
             <a-table
               :show-header="false"
               :hoverable="true"
               :loading="tableLoading"
               :data="userList"
-              :pagination="{
-                pageSize: 20,
-              }"
+              :pagination="false"
               :row-class="rowClassName"
               @cell-click="cellClick"
               @page-change="handleClickUserPageChange"
@@ -48,6 +82,23 @@
               </template>
             </a-table>
           </div>
+            <div
+        class="pagination"
+        style="display: flex; justify-content: space-between; margin-top: 15px"
+      >
+        <div></div>
+        <div>
+          <a-pagination
+            v-model:current="userpagination.page"
+            v-model:page-size="userpagination.pageSize"
+            :total="userpagination.total || 0"
+            :show-total="true"
+            :show-page-size="true"
+            :page-size-options="[10, 20, 50, 100, 200]"
+            @change="handleClickUserPageChange"
+            @page-size-change="pageSizeChange"
+        /></div>
+      </div>
         </a-card>
       </a-col>
 
@@ -99,6 +150,10 @@
     userDel,
     updateUserKfConfigInfo,
   } from '@/api/settings';
+    import {
+    userChannelGrid,
+    
+  } from '@/api/channel';
   import { userConsultGrid } from '@/api/userList';
   import { getChatLog, chatUser } from '@/api/chatLog';
   import _ from 'lodash';
@@ -112,6 +167,10 @@
     { value: 0, label: '禁用' },
     { value: 1, label: '启用' },
   ]);
+   const channelList = ref<any[]>([]);
+    const searchForm = ref({
+    channel: '',
+  });
   const checkedKeys = ref<any>([]);
   const fileList = ref<any[]>([]);
   const userKfFormVisible = ref(false);
@@ -151,7 +210,7 @@
   const basePagination: any = {
     current: 1,
     page: 1,
-    pageSize: 200,
+    pageSize: 30,
   };
   const pagination = reactive({
     ...basePagination,
@@ -163,7 +222,21 @@
     ...basePagination,
   });
   const selectedRow = ref<any>('');
+  const fetchChannelData = async (params: { pageIndex: 1; page_size: 30 }) => {
+    try {
+      const { data, code } = await userChannelGrid(params);
+      if (code === 200) {
+        channelList.value = data.rows || [];
+      } else {
+        renderData.value = [];
+      }
+    } catch (err) {
+      // you can report use errorHandler or other
+    } finally {
 
+    }
+  };
+  fetchChannelData({ pageIndex: 1, page_size: 30 })
   const cellClick = async (row: any) => {
     if (loading.value) {
       return;
@@ -189,6 +262,7 @@
     fetchListData({ ...kfpagination, kfId: formModel.value.kfId });
   };
   const handleClickUserPageChange = (page: number) => {
+    console.log(page)
     userpagination.current = page;
     userpagination.page = page;
     fetchUserList({ ...userpagination, kfId: formModel.value.kfId });
@@ -199,6 +273,7 @@
   const rowClassName = (record: any) => {
     return record.userUuid === selectedRow.value ? 'selected-row' : '';
   };
+  
   // 获取客服列表
   const fetchListData = async (params: { page: 1; page_size: 20 }) => {
     const { data, code } = await getUserPage(params);
@@ -211,7 +286,10 @@
           };
         }) || [];
       cacheKfList.value = data.rows ? data.rows : [];
+      kfpagination.total = data.total;
     }
+tableKfLoading.value = false;
+
     // try {
     //   tableLoading.value = true;
     //   const userRes = await userConsultGrid({ pageIndex: 1, pageSize: 200 });
@@ -232,6 +310,10 @@
     //   console.log(e);
     // }
   };
+  const searchUser = ()=>{
+tableLoading.value = true;
+      fetchUserList({...searchForm.value,page:1,pageSize:200,kfId: formModel.value.kfId});
+  }
   // 获取客服接待的用户数
   const fetchUserList = async (params: { page: 1; page_size: 20 }) => {
     try {
@@ -251,6 +333,7 @@
             };
           })
         : [];
+        userpagination.total = data.total;
       tableLoading.value = false;
     } catch (e) {
       console.log(e);
@@ -586,5 +669,8 @@
   }
   .arco-typography {
     display: block;
+  }
+  .mb-20{
+    margin-bottom: 20px;
   }
 </style>

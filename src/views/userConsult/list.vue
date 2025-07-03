@@ -2,6 +2,22 @@
   <div class="container">
     <Breadcrumb :items="['咨询用户管理']" />
     <a-card class="general-card" title="咨询用户列表">
+      <a-space class="mb-20">
+        <a-select
+          :style="{ width: '320px' }"
+          v-model="searchForm.channel"
+          allow-clear
+          placeholder="请选择分组"
+        >
+          <a-option
+            v-for="(el, i) in channelList"
+            :key="i"
+            :value="el.channelKey"
+            >{{ el.channelName }}</a-option
+          >
+        </a-select>
+        <a-button :type="'primary'" class="" @click="search">提交</a-button>
+      </a-space>
       <a-table
         row-key="id"
         :loading="loading"
@@ -201,7 +217,7 @@
     userConsultDel,
     userConsultUpdate,
   } from '@/api/userList';
-
+  import { userChannelGrid } from '@/api/channel';
   import _ from 'lodash';
 
   const statusEnum: any = {
@@ -225,6 +241,10 @@
   const { t } = useI18n();
 
   const renderData = ref<any[]>([]);
+  const channelList = ref<any[]>([]);
+    const searchForm = ref({
+    channel: '',
+  });
   const formModel = ref(generateFormModel());
 
   const basePagination: any = {
@@ -235,11 +255,28 @@
   const pagination = reactive({
     ...basePagination,
   });
-
+  const fetchChannelData = async (params: { pageIndex: 1; page_size: 100 }) => {
+    try {
+      const { data, code } = await userChannelGrid(params);
+      if (code === 200) {
+        channelList.value = data.rows || [];
+      } else {
+        renderData.value = [];
+      }
+    } catch (err) {
+      // you can report use errorHandler or other
+    } finally {
+      setLoading(false);
+    }
+  };
   const fetchData = async (params: { pageIndex: 1; page_size: 20 }) => {
     setLoading(true);
     try {
-      const { data, code } = await userConsultGrid(params);
+      let d = {
+        ...params,
+        ...searchForm.value,
+      };
+      const { data, code } = await userConsultGrid(d);
       if (code === 200) {
         renderData.value = data.rows ? data.rows : [];
         console.log(renderData.value, 'renderData.value');
@@ -275,6 +312,7 @@
     ...basePagination,
     ...formModel.value,
   } as unknown as any);
+  fetchChannelData({ pageIndex: 1, page_size: 100 });
   const beforeRemove = () => {
     return new Promise((resolve) => {
       fileList.value = [];
@@ -392,5 +430,8 @@
 <style scoped lang="less">
   .container {
     padding: 0 20px 20px 20px;
+  }
+  .mb-20 {
+    margin-bottom: 20px;
   }
 </style>

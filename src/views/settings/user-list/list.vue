@@ -246,6 +246,19 @@
         </a-form-item>
       </a-form>
     </a-modal>
+        <a-modal
+      v-model:visible="codeVisible"
+      :title="'绑定谷歌二次验证二维码'"
+      width="500px"
+      @cancel="codeVisible = false"
+      @before-ok="getuserAuthCheck"
+    >
+    <a-space direction="vertical" class="mx-auto">
+      <a-image :src="codeUrl" width="200px" height="200px" />
+      <a-input v-model="codeForm.code" placeholder="请输入谷歌验证码" />
+      
+    </a-space>
+  </a-modal>
     <a-modal
       v-model:visible="formVisible"
       :title="formTitle"
@@ -366,12 +379,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { h, ref, reactive } from 'vue';
+  import { h, ref, reactive,computed } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
   import { Pagination } from '@/types/global';
   import { Message, Modal } from '@arco-design/web-vue';
-
+  import {useUserStore} from '@/store';
   import dayjs from 'dayjs';
   import { FormInstance } from '@arco-design/web-vue/es/form';
   import { uploadFile } from '@/api/tool';
@@ -386,7 +399,7 @@
     updateUserConfigInfo,
     userConfigInfo,
   } from '@/api/settings';
-  import { getUserAuth } from '@/api/user';
+  import { getUserAuth,userAuthCheck } from '@/api/user';
   import _ from 'lodash';
 
   const userStatusList = ref<any[]>([
@@ -402,6 +415,8 @@
     greeting: '',
     userId: undefined,
   });
+  const userStore = useUserStore();
+  const userInfo  = computed(()=> userStore.$state);
   const userKfConfigModel = ref({
     maxKfCount: undefined,
     maxChannelCount: undefined,
@@ -499,6 +514,15 @@
       console.log(editModel.value, 'fasda');
     }
   };
+  const getuserAuthCheck = async(done:any)=>{
+    const {data,code} = await userAuthCheck({ userId: codeForm.value.userId,code:codeForm.value.code })
+    if(code   == 200){
+      Message.success('验证成功')
+      setTimeout(() => {
+        done()
+      })
+    }
+  }
   const pageSizeChange = (size: number) => {
     // console.log(size);
     basePagination.pageSize = size;
@@ -523,34 +547,51 @@
       type: 1,
     };
   };
+  const codeUrl = ref("")
+
+  const codeForm = ref({
+code:'',
+userId:''
+  })
+  const codeVisible = ref(false)
   const handleClickUserAuth = async (row: any) => {
+    console.log(userInfo.value,'userInfo')
+    if(row.useStatus == 1  && userInfo.value.isSupper != 1){
+      Message.error('该用户已绑定')
+      return
+
+    }
     const { data, code } = await getUserAuth({ userId: row.userId });
     if (code === 200) {
-      const imgNode = h('img', {
-        src: data.url,
-        style: {
-          width: '200px',
-          height: '200px',
-        },
-      }); // 创建img节点
-      const contentNode = h(
-        'div',
-        {
-          style: {
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '200px',
-          },
-        },
-        [imgNode]
-      ); // 将img节点插入到div节点中
-      Modal.info({
-        title: '谷歌二次验证二维码',
-        content: () => contentNode,
-        okText: '我已绑定成功',
-        maskClosable: false,
-      });
+      codeUrl.value = data.url;
+      codeForm.value.userId = row.userId
+
+      codeVisible.value = true;
+      // const imgNode = h('img', {
+      //   src: data.url,
+      //   style: {
+      //     width: '200px',
+      //     height: '200px',
+      //   },
+      // }); // 创建img节点
+      // const contentNode = h(
+      //   'div',
+      //   {
+      //     style: {
+      //       display: 'flex',
+      //       justifyContent: 'center',
+      //       alignItems: 'center',
+      //       minHeight: '200px',
+      //     },
+      //   },
+      //   [imgNode]
+      // ); // 将img节点插入到div节点中
+      // Modal.info({
+      //   title: '谷歌二次验证二维码',
+      //   content: () => contentNode,
+      //   okText: '我已绑定成功',
+      //   maskClosable: false,
+      // });
     }
   };
   const editModel = ref(editFormModel());
@@ -721,5 +762,8 @@
   }
   .align-center {
     align-items: center;
+  }
+  .mx-auto{
+    margin: 0 auto;
   }
 </style>

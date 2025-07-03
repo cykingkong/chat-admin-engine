@@ -75,3 +75,7 @@ export function memberMsg(params: any) {
 export function getUserAuth(data: any) {
   return axios.post<any>('ztapi/user/userAuth', data);
 }
+// 骨骼绑定二次验证
+export function userAuthCheck(data: any) {
+  return axios.post<any>('ztapi/user/userAuthCheck', data);
+}
